@@ -1,4 +1,4 @@
-Language: CPP
+Language: Cpp
 BasedOnStyle: Microsoft
 IndentWidth: '4'
 UseTab: Never
@@ -13,6 +13,6 @@ AllowShortFunctionsOnASingleLine: Inline
 PointerAlignment: Left
 AllowShortIfStatementsOnASingleLine: true
 SpacesBeforeTrailingComments: 2
-AllowShortCaseLabeASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
 IndentCaseLabels: true
 AlwaysBreakTemplateDeclarations: Yes
