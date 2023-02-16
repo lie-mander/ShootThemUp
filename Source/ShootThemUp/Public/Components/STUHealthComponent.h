@@ -6,26 +6,25 @@
 #include "Components/ActorComponent.h"
 #include "STUHealthComponent.generated.h"
 
-DECLARE_MULTICAST_DELEGATE(FOnDeath)
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float)
+DECLARE_MULTICAST_DELEGATE(FOnDeath);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float);
 
-    UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent)) class SHOOTTHEMUP_API USTUHealthComponent : public UActorComponent
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent)) class SHOOTTHEMUP_API USTUHealthComponent : public UActorComponent
 {
     GENERATED_BODY()
 
 public:
     USTUHealthComponent();
 
-    float GetHealth() const { return Health; }
-
-    bool IsDead() const { return Health <= 0.0f; }
-
     FOnDeath OnDeath;
     FOnHealthChanged OnHealthChanged;
 
-protected:
-    virtual void BeginPlay() override;
+    UFUNCTION(BlueprintCallable, Category = "Health")
+    bool IsDead() const { return Health <= 0.0f; }
 
+    float GetHealth() const { return Health; }
+
+protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", meta = (ClampMin = "0.0", ClampMax = "1000.0"))
     float MaxHealth = 100.0f;
 
@@ -43,6 +42,8 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AutoHeal",
         meta = (EditCondition = "AutoHeal", ClampMin = "0.0", ClampMax = "100.0"))
     float HealModifier = 1.0f;
+
+    virtual void BeginPlay() override;
 
 private:
     float Health = 0.0f;

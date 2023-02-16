@@ -8,12 +8,11 @@
 #include "Components/STUHealthComponent.h"
 #include "Components/TextRenderComponent.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogBaseCharacter, All, All)
+DEFINE_LOG_CATEGORY_STATIC(LogBaseCharacter, All, All);
 
 ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
     : Super(ObjInit.SetDefaultSubobjectClass<USTUCharacterMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
-    // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
 
     SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
@@ -50,19 +49,16 @@ void ASTUBaseCharacter::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 }
 
-// Called to bind functionality to input
 void ASTUBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
+    check(PlayerInputComponent);
 
     PlayerInputComponent->BindAxis("MoveForward", this, &ASTUBaseCharacter::MoveForward);
     PlayerInputComponent->BindAxis("MoveRight", this, &ASTUBaseCharacter::MoveRight);
-
     PlayerInputComponent->BindAxis("LookUp", this, &ASTUBaseCharacter::AddControllerPitchInput);
     PlayerInputComponent->BindAxis("TurnAround", this, &ASTUBaseCharacter::AddControllerYawInput);
-
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASTUBaseCharacter::Jump);
-
     PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ASTUBaseCharacter::OnStartRunning);
     PlayerInputComponent->BindAction("Run", IE_Released, this, &ASTUBaseCharacter::OnStopRunning);
 }
@@ -88,10 +84,12 @@ bool ASTUBaseCharacter::IsRunning() const
 float ASTUBaseCharacter::GetMovementDirection() const
 {
     if (GetVelocity().IsZero()) return 0.0f;
+
     const auto VelocityNormal = GetVelocity().GetSafeNormal();
     const auto AngleBetween = FMath::Acos(FVector::DotProduct(GetActorForwardVector(), VelocityNormal));
     const auto CrossProduct = FVector::CrossProduct(GetActorForwardVector(), VelocityNormal);
     const auto Degress = FMath::RadiansToDegrees(AngleBetween);
+
     return CrossProduct.IsZero() ? Degress : Degress * FMath::Sign(CrossProduct.Z);
 }
 
@@ -111,7 +109,7 @@ void ASTUBaseCharacter::OnDeath()
 
     PlayAnimMontage(DeathAnimMontage);
     GetCharacterMovement()->DisableMovement();
-    SetLifeSpan(5.0f);
+    SetLifeSpan(LifeSpanOnDeath);
 
     if (Controller)
     {
@@ -126,7 +124,7 @@ void ASTUBaseCharacter::OnHealthChanged(float Health)
 
 void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit) 
 {
-    const auto FallVelocity = -GetMovementComponent()->Velocity.Z;
+    const auto FallVelocity = -GetVelocity().Z;
     if (FallVelocity < LandedDamageVelocity.X) return;
     UE_LOG(LogBaseCharacter, Display, TEXT("Player is fall, velocity: %f"), FallVelocity);
 

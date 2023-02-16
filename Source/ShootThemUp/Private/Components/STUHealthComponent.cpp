@@ -27,18 +27,17 @@ void USTUHealthComponent::OnTakeAnyDamage(
     AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
     if (Damage <= 0.0f || IsDead() || !GetWorld()) return;
-
     SetHealth(Health - Damage);
-
-    if (AutoHeal)
-    {
-        GetOwner()->GetWorldTimerManager().SetTimer(
-            TimerAutoHeal, this, &USTUHealthComponent::AddHealthAutoHeal, HealUpdateRate, AutoHeal, AutoHealStartDelay);
-    }
 
     if (IsDead())
     {
+        GetOwner()->GetWorldTimerManager().ClearTimer(TimerAutoHeal);
         OnDeath.Broadcast();
+    }
+    else if (AutoHeal)
+    {
+        GetOwner()->GetWorldTimerManager().SetTimer(
+        TimerAutoHeal, this, &USTUHealthComponent::AddHealthAutoHeal, HealUpdateRate, AutoHeal, AutoHealStartDelay);
     }
 }
 
