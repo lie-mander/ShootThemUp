@@ -17,6 +17,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     USkeletalMeshComponent* WeaponMesh;
 
+	virtual void Fire();
+
 protected:
 	virtual void BeginPlay() override;
 
