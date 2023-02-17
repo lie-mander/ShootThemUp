@@ -4,8 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "Player/STUPlayerController.h"
-#include "Player/STUBaseCharacter.h"
 #include "STUGameModeBase.generated.h"
 
 /**
