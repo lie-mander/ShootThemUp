@@ -33,8 +33,6 @@ void ASTUBaseWeapon::MakeShot()
     FVector TraceStart;
     FVector TraceEnd;
     if (!GetTraceData(TraceStart, TraceEnd)) return;
-
-    const FVector MuzzleLocation = GetMuzzleWorldLocation();
     
     FHitResult HitResult;
     MakeHit(HitResult, TraceStart, TraceEnd);
@@ -42,23 +40,25 @@ void ASTUBaseWeapon::MakeShot()
 
     if (HitResult.bBlockingHit && Degrees <= MaxDegressForShoot)
     {
-        DrawDebugLine(GetWorld(), MuzzleLocation, HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
+        DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
         DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 15.0f, 24, FColor::Red, false, 4.0f);
+        MakeDamage(HitResult);
         UE_LOG(LogBaseWeapon, Display, TEXT("Bone: %s"), *HitResult.BoneName.ToString());
     }
     else if (HitResult.bBlockingHit)
     {
-        DrawDebugLine(GetWorld(), MuzzleLocation, TraceEnd, FColor::Yellow, false, 3.0f, 0, 3.0f);
-        MakeHit(HitResult, MuzzleLocation, TraceEnd);
+        DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Yellow, false, 3.0f, 0, 3.0f);
+        MakeHit(HitResult, GetMuzzleWorldLocation(), TraceEnd);
         if (HitResult.bBlockingHit)
         {
             DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 15.0f, 24, FColor::Yellow, false, 4.0f);
+            MakeDamage(HitResult);
             UE_LOG(LogBaseWeapon, Display, TEXT("Bone: %s"), *HitResult.BoneName.ToString());
         }
     }
     else
     {
-        DrawDebugLine(GetWorld(), MuzzleLocation, TraceEnd, FColor::Blue, false, 3.0f, 0, 3.0f);
+        DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Blue, false, 3.0f, 0, 3.0f);
     }
 }
 
@@ -106,6 +106,13 @@ void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, c
     FCollisionQueryParams CollisionParams;
     CollisionParams.AddIgnoredActor(GetOwner());
     GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
+}
+
+void ASTUBaseWeapon::MakeDamage(FHitResult& HitResult)
+{
+    auto Target = Cast<ACharacter>(HitResult.GetActor());
+    if (!Target) return;
+    Target->TakeDamage(WeaponDamage, FDamageEvent(), GetPlayerController(), this);
 }
 
 double ASTUBaseWeapon::GetDegreesBetweenOwnerAndTarget(FHitResult& HitResult) const

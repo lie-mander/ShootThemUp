@@ -20,7 +20,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     FName MuzzleSocketName = "MuzzleSocket";
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (ClampMin = "0.0"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0.0"), Category = "Shoot")
+    float WeaponDamage = 10.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (ClampMin = "0.0"), Category = "Shoot")
     float TraceMaxDistance = 1500.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0.0", ClampMax = "180.0"))
@@ -33,6 +36,7 @@ protected:
 
 	void MakeShot();
     void MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
+    void MakeDamage(FHitResult& HitResult);
 
     bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
     bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
