@@ -26,12 +26,6 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Shoot")
     float TraceMaxDistance = 1500.0f;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Shoot")
-    float TimeBetweenShots = 0.1f;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Shoot")
-    float BulletSpread = 1.5f;
-
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0.0", ClampMax = "180.0"))
     float MaxDegressForShoot = 90.0f;
 
@@ -41,17 +35,15 @@ public:
 protected:
     virtual void BeginPlay() override;
 
-    void MakeShot();
+    virtual void MakeShot();
+    virtual bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
+
     void MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
     void MakeDamage(FHitResult& HitResult);
 
     bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
-    bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
     APlayerController* GetPlayerController() const;
     FVector GetMuzzleWorldLocation() const;
     FVector GetMuzzleWorldForwardVector() const;
     double GetDegreesBetweenOwnerAndTarget(FHitResult& HitResult) const;
-
-private:
-    FTimerHandle ShotTimerHandle;
 };

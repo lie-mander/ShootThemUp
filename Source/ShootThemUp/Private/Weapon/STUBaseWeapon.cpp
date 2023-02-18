@@ -22,50 +22,17 @@ void ASTUBaseWeapon::BeginPlay()
 
 void ASTUBaseWeapon::StartFire()
 {
-    GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &ASTUBaseWeapon::MakeShot, TimeBetweenShots, true);
-    UE_LOG(LogBaseWeapon, Display, TEXT("StartFire"));
+
 }
 
 void ASTUBaseWeapon::StopFire()
 {
-    GetWorldTimerManager().ClearTimer(ShotTimerHandle);
-    UE_LOG(LogBaseWeapon, Display, TEXT("StopFire"));
+
 }
 
 void ASTUBaseWeapon::MakeShot()
 {
-    if (!GetWorld()) return;
 
-    FVector TraceStart;
-    FVector TraceEnd;
-    if (!GetTraceData(TraceStart, TraceEnd)) return;
-    
-    FHitResult HitResult;
-    MakeHit(HitResult, TraceStart, TraceEnd);
-    const double Degrees = GetDegreesBetweenOwnerAndTarget(HitResult);
-
-    if (HitResult.bBlockingHit && Degrees <= MaxDegressForShoot)
-    {
-        DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
-        DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 15.0f, 24, FColor::Red, false, 4.0f);
-        MakeDamage(HitResult);
-        UE_LOG(LogBaseWeapon, Display, TEXT("Bone: %s"), *HitResult.BoneName.ToString());
-    }
-    else if (HitResult.bBlockingHit)
-    {
-        DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Yellow, false, 3.0f, 0, 3.0f);
-        MakeHit(HitResult, GetMuzzleWorldLocation(), TraceEnd);
-        if (HitResult.bBlockingHit)
-        {
-            DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 15.0f, 24, FColor::Yellow, false, 4.0f);
-            MakeDamage(HitResult);
-            UE_LOG(LogBaseWeapon, Display, TEXT("Bone: %s"), *HitResult.BoneName.ToString());
-        }
-    }
-    else
-    {
-        DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Blue, false, 3.0f, 0, 3.0f);
-    }
 }
 
 APlayerController* ASTUBaseWeapon::GetPlayerController() const
@@ -102,8 +69,7 @@ bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
     if(!GetPlayerViewPoint(ViewLocation, ViewRotation)) return false;
 
     TraceStart = ViewLocation;
-    const auto HalfRad = FMath::DegreesToRadians(BulletSpread);
-    const FVector ShootDirection = FMath::VRandCone(ViewRotation.Vector(), HalfRad);
+    const FVector ShootDirection = ViewRotation.Vector();
     TraceEnd = TraceStart + ShootDirection * TraceMaxDistance;
     return true;
 }
