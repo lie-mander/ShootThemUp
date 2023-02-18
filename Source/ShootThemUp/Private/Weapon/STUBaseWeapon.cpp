@@ -62,6 +62,11 @@ FVector ASTUBaseWeapon::GetMuzzleWorldForwardVector() const
     return WeaponMesh->GetSocketTransform(MuzzleSocketName).GetRotation().GetForwardVector();
 }
 
+float ASTUBaseWeapon::GetDegreesBetweenOwnerAndTarget() const
+{
+    return DegreesBetweenOwnerAndTarget;
+}
+
 bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const 
 {
     FVector ViewLocation;
@@ -79,6 +84,7 @@ void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, c
     FCollisionQueryParams CollisionParams;
     CollisionParams.AddIgnoredActor(GetOwner());
     GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
+    SetDegreesBetweenOwnerAndTarget(HitResult);
 }
 
 void ASTUBaseWeapon::MakeDamage(FHitResult& HitResult)
@@ -88,9 +94,9 @@ void ASTUBaseWeapon::MakeDamage(FHitResult& HitResult)
     Target->TakeDamage(WeaponDamage, FDamageEvent(), GetPlayerController(), this);
 }
 
-double ASTUBaseWeapon::GetDegreesBetweenOwnerAndTarget(FHitResult& HitResult) const
+void ASTUBaseWeapon::SetDegreesBetweenOwnerAndTarget(FHitResult& HitResult)
 {
     const FVector VectorToHit = (HitResult.ImpactPoint - GetMuzzleWorldLocation()).GetSafeNormal();
     const auto AngleBetween = FMath::Acos(FVector::DotProduct(GetMuzzleWorldForwardVector(), VectorToHit));
-    return FMath::RadiansToDegrees(AngleBetween);
+    DegreesBetweenOwnerAndTarget = FMath::RadiansToDegrees(AngleBetween);
 }

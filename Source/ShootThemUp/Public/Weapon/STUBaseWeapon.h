@@ -45,5 +45,9 @@ protected:
     APlayerController* GetPlayerController() const;
     FVector GetMuzzleWorldLocation() const;
     FVector GetMuzzleWorldForwardVector() const;
-    double GetDegreesBetweenOwnerAndTarget(FHitResult& HitResult) const;
+    float GetDegreesBetweenOwnerAndTarget() const;
+    void SetDegreesBetweenOwnerAndTarget(FHitResult& HitResult);
+
+private:
+    float DegreesBetweenOwnerAndTarget = 0.0f;
 };

@@ -7,22 +7,27 @@
 #include "STUProjectile.generated.h"
 
 class USphereComponent;
+class UProjectileMovementComponent;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUProjectile : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	ASTUProjectile();
+    GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+public:
+    ASTUProjectile();
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     USphereComponent* CollisionComponent;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    UProjectileMovementComponent* MovementComponent;
+
+    void SetShotDirection(const FVector& Direction) { ShotDirection = Direction; }
+
 protected:
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
-public:	
-	
-
+private:
+    FVector ShotDirection;
 };

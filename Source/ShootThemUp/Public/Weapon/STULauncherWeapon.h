@@ -21,4 +21,7 @@ public:
 
 protected:
     virtual void MakeShot();
+
+private:
+    void SpawnProjectileInDirection(const FVector& EndPoint);
 };

@@ -23,9 +23,8 @@ void ASTURifleWeapon::MakeShot()
 
     FHitResult HitResult;
     MakeHit(HitResult, TraceStart, TraceEnd);
-    const double Degrees = GetDegreesBetweenOwnerAndTarget(HitResult);
 
-    if (HitResult.bBlockingHit && Degrees <= MaxDegressForShoot)
+    if (HitResult.bBlockingHit && GetDegreesBetweenOwnerAndTarget() <= MaxDegressForShoot)
     {
         DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
         DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 15.0f, 24, FColor::Red, false, 4.0f);
