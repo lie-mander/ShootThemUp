@@ -30,34 +30,17 @@ void ASTUBaseWeapon::MakeShot()
 {
     if (!GetWorld()) return;
 
-    ACharacter* Player = Cast<ACharacter>(GetOwner());
-    if (!Player) return;
+    FVector TraceStart;
+    FVector TraceEnd;
+    if (!GetTraceData(TraceStart, TraceEnd)) return;
 
-    AController* Controller = Player->GetController();
-    if (!Controller) return;
-
-    FVector ViewLocation;
-    FRotator ViewRotation;
-    Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
-
-    const FTransform SocketTransform = WeaponMesh->GetSocketTransform(MuzzleSocketName);
-
-    const FVector TraceStart = ViewLocation;
-    const FVector ShootDirection = ViewRotation.Vector();
-    const FVector MuzzleLocation = SocketTransform.GetLocation();
-    const FVector MuzzleDirection = SocketTransform.GetRotation().GetForwardVector();
-    const FVector TraceEnd = TraceStart + ShootDirection * TraceMaxDistance;
-
+    const FVector MuzzleLocation = GetMuzzleWorldLocation();
+    
     FHitResult HitResult;
-    FCollisionQueryParams CollisionParams;
-    CollisionParams.AddIgnoredActor(GetOwner());
-    GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
+    MakeHit(HitResult, TraceStart, TraceEnd);
+    const double Degrees = GetDegreesBetweenOwnerAndTarget(HitResult);
 
-    const FVector VectorToHit = (HitResult.ImpactPoint - MuzzleLocation).GetSafeNormal();
-    const auto AngleBetween = FMath::Acos(FVector::DotProduct(MuzzleDirection, VectorToHit));
-    const auto Degress = FMath::RadiansToDegrees(AngleBetween);
-
-    if (HitResult.bBlockingHit && Degress <= MaxDegressForShoot)
+    if (HitResult.bBlockingHit && Degrees <= MaxDegressForShoot)
     {
         DrawDebugLine(GetWorld(), MuzzleLocation, HitResult.ImpactPoint, FColor::Red, false, 3.0f, 0, 3.0f);
         DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 15.0f, 24, FColor::Red, false, 4.0f);
@@ -66,7 +49,7 @@ void ASTUBaseWeapon::MakeShot()
     else if (HitResult.bBlockingHit)
     {
         DrawDebugLine(GetWorld(), MuzzleLocation, TraceEnd, FColor::Yellow, false, 3.0f, 0, 3.0f);
-        GetWorld()->LineTraceSingleByChannel(HitResult, MuzzleLocation, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
+        MakeHit(HitResult, MuzzleLocation, TraceEnd);
         if (HitResult.bBlockingHit)
         {
             DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 15.0f, 24, FColor::Yellow, false, 4.0f);
@@ -77,4 +60,57 @@ void ASTUBaseWeapon::MakeShot()
     {
         DrawDebugLine(GetWorld(), MuzzleLocation, TraceEnd, FColor::Blue, false, 3.0f, 0, 3.0f);
     }
+}
+
+APlayerController* ASTUBaseWeapon::GetPlayerController() const
+{
+    ACharacter* Player = Cast<ACharacter>(GetOwner());
+    if (!Player) return nullptr;
+
+    return Player->GetController<APlayerController>();
+}
+
+bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const 
+{
+    const auto Controller = GetPlayerController();
+    if (!Controller) return false;
+
+    Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
+    return true;
+}
+
+FVector ASTUBaseWeapon::GetMuzzleWorldLocation() const 
+{
+    return WeaponMesh->GetSocketLocation(MuzzleSocketName);
+}
+
+FVector ASTUBaseWeapon::GetMuzzleWorldForwardVector() const
+{
+    return WeaponMesh->GetSocketTransform(MuzzleSocketName).GetRotation().GetForwardVector();
+}
+
+bool ASTUBaseWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const 
+{
+    FVector ViewLocation;
+    FRotator ViewRotation;
+    if(!GetPlayerViewPoint(ViewLocation, ViewRotation)) return false;
+
+    TraceStart = ViewLocation;
+    const FVector ShootDirection = ViewRotation.Vector();
+    TraceEnd = TraceStart + ShootDirection * TraceMaxDistance;
+    return true;
+}
+
+void ASTUBaseWeapon::MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd) 
+{
+    FCollisionQueryParams CollisionParams;
+    CollisionParams.AddIgnoredActor(GetOwner());
+    GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
+}
+
+double ASTUBaseWeapon::GetDegreesBetweenOwnerAndTarget(FHitResult& HitResult) const
+{
+    const FVector VectorToHit = (HitResult.ImpactPoint - GetMuzzleWorldLocation()).GetSafeNormal();
+    const auto AngleBetween = FMath::Acos(FVector::DotProduct(GetMuzzleWorldForwardVector(), VectorToHit));
+    return FMath::RadiansToDegrees(AngleBetween);
 }
