@@ -9,32 +9,39 @@
 UCLASS()
 class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	ASTUBaseWeapon();
+    GENERATED_BODY()
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+public:
+    ASTUBaseWeapon();
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     USkeletalMeshComponent* WeaponMesh;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
     FName MuzzleSocketName = "MuzzleSocket";
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0.0"), Category = "Shoot")
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Shoot")
     float WeaponDamage = 10.0f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, meta = (ClampMin = "0.0"), Category = "Shoot")
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Shoot")
     float TraceMaxDistance = 1500.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0.0", ClampMax = "180.0"))
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Shoot")
+    float TimeBetweenShots = 0.1f;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Shoot")
+    float BulletSpread = 1.5f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0.0", ClampMax = "180.0"))
     float MaxDegressForShoot = 90.0f;
 
-	virtual void Fire();
+    virtual void StartFire();
+    virtual void StopFire();
 
 protected:
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
-	void MakeShot();
+    void MakeShot();
     void MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
     void MakeDamage(FHitResult& HitResult);
 
@@ -44,4 +51,7 @@ protected:
     FVector GetMuzzleWorldLocation() const;
     FVector GetMuzzleWorldForwardVector() const;
     double GetDegreesBetweenOwnerAndTarget(FHitResult& HitResult) const;
+
+private:
+    FTimerHandle ShotTimerHandle;
 };
