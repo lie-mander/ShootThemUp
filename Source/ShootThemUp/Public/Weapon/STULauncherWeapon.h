@@ -6,12 +6,19 @@
 #include "Weapon/STUBaseWeapon.h"
 #include "STULauncherWeapon.generated.h"
 
-/**
- * 
- */
+class ASTUProjectile;
+
 UCLASS()
 class SHOOTTHEMUP_API ASTULauncherWeapon : public ASTUBaseWeapon
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
+public:
+    virtual void StartFire();
+
+    UPROPERTY(EditDefaultsOnly, Category = "Projectile")
+    TSubclassOf<ASTUProjectile> ProjectileClass;
+
+protected:
+    virtual void MakeShot();
 };
