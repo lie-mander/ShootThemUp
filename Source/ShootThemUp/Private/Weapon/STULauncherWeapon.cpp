@@ -23,23 +23,15 @@ void ASTULauncherWeapon::MakeShot()
     if (HitResult.bBlockingHit && GetDegreesBetweenOwnerAndTarget() <= MaxDegressForShoot)
     {
         SpawnProjectileInDirection(HitResult.ImpactPoint);
-        MakeDamage(HitResult);
     }
     else if (HitResult.bBlockingHit)
     {
-        DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Yellow, false, 3.0f, 0, 3.0f);
         SpawnProjectileInDirection(TraceEnd);
         MakeHit(HitResult, GetMuzzleWorldLocation(), TraceEnd);
-        if (HitResult.bBlockingHit)
-        {
-            DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 15.0f, 24, FColor::Yellow, false, 4.0f);
-            MakeDamage(HitResult);
-        }
     }
     else
     {
         SpawnProjectileInDirection(TraceEnd);
-        DrawDebugLine(GetWorld(), GetMuzzleWorldLocation(), TraceEnd, FColor::Blue, false, 3.0f, 0, 3.0f);
     }
 }
 
@@ -48,5 +40,6 @@ void ASTULauncherWeapon::SpawnProjectileInDirection(const FVector& EndPoint) {
     ASTUProjectile* Projectile = GetWorld()->SpawnActorDeferred<ASTUProjectile>(ProjectileClass, SpawnTransform);
     const FVector Direction = (EndPoint - GetMuzzleWorldLocation()).GetSafeNormal();
     Projectile->SetShotDirection(Direction);
+    Projectile->SetOwner(GetOwner());
     Projectile->FinishSpawning(SpawnTransform);
 }
