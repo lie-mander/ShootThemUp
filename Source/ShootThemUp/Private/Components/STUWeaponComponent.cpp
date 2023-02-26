@@ -42,9 +42,9 @@ void USTUWeaponComponent::SpawnWeapons()
     ACharacter* Character = Cast<ACharacter>(GetOwner());
     if (!Character || !GetWorld()) return;
 
-    for (auto WeaponClass : WeaponClasses)
+    for (auto OneWeaponData : WeaponData)
     {
-        auto Weapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(WeaponClass);
+        auto Weapon = GetWorld()->SpawnActor<ASTUBaseWeapon>(OneWeaponData.WeaponClass);
         if (!Weapon) continue;
 
         Weapon->SetOwner(Character);
@@ -86,6 +86,11 @@ void USTUWeaponComponent::NextWeapon()
 {
     if (!CanEquip()) return;
     EquipWeapon();
+}
+
+void USTUWeaponComponent::Reload() 
+{
+    PlayAnimMontage(CurrentReloadAnimMontage);
 }
 
 void USTUWeaponComponent::PlayAnimMontage(UAnimMontage* Animation)
@@ -138,6 +143,12 @@ void USTUWeaponComponent::OnWeaponChanged(USkeletalMeshComponent* MeshComp)
 
     CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
     CurrentWeapon = Weapons[CurrentWeaponIndex];
+
+    auto CurrentWeaponData = WeaponData.FindByPredicate([&](const FWeaponData& Data) {  //
+        return Data.WeaponClass == CurrentWeapon->GetClass();                                   //
+    });
+    CurrentReloadAnimMontage = CurrentWeaponData ? CurrentWeaponData->ReloadAnimMontage : nullptr;
+
     AttachWeaponToSocket(CurrentWeapon, Character->GetMesh(), WeaponEquipSocketName);
 }
 
