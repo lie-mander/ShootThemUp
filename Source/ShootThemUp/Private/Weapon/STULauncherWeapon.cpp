@@ -11,7 +11,7 @@ void ASTULauncherWeapon::StartFire()
 
 void ASTULauncherWeapon::MakeShot()
 {
-    if (!GetWorld()) return;
+    if (!GetWorld() || IsAmmoEmpty()) return;
 
     FVector TraceStart;
     FVector TraceEnd;
@@ -33,9 +33,12 @@ void ASTULauncherWeapon::MakeShot()
     {
         SpawnProjectileInDirection(TraceEnd);
     }
+
+    DecreaseAmmo();
 }
 
-void ASTULauncherWeapon::SpawnProjectileInDirection(const FVector& EndPoint) {
+void ASTULauncherWeapon::SpawnProjectileInDirection(const FVector& EndPoint)
+{
     const FTransform SpawnTransform(FRotator::ZeroRotator, GetMuzzleWorldLocation());
     ASTUProjectile* Projectile = GetWorld()->SpawnActorDeferred<ASTUProjectile>(ProjectileClass, SpawnTransform);
     const FVector Direction = (EndPoint - GetMuzzleWorldLocation()).GetSafeNormal();
