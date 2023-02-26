@@ -62,6 +62,7 @@ private:
     int32 CurrentWeaponIndex = 0;
 
     bool EquipAnimInProgress = false;
+    bool ReloadAnimInProgress = false;
 
     void AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneComponent* Mesh, const FName SocketName);
     void EquipWeapon();
@@ -71,7 +72,29 @@ private:
     void InitAnimations();
     void OnEquipFinished(USkeletalMeshComponent* MeshComp);
     void OnWeaponChanged(USkeletalMeshComponent* MeshComp);
+    void OnReloadFinished(USkeletalMeshComponent* MeshComp);
 
     bool CanEquip();
     bool CanFire();
+    bool CanReload();
+
+    template <class T>
+    T* FindNotifyByClass(UAnimMontage* AnimMontage);
 };
+
+template <class T>
+T* USTUWeaponComponent::FindNotifyByClass(UAnimMontage* AnimMontage)
+{
+    if (!AnimMontage) return nullptr;
+
+    const auto NotifyEvents = AnimMontage->Notifies;
+    for (auto NotifyEvent : NotifyEvents)
+    {
+        auto ResultNotify = Cast<T>(NotifyEvent.Notify);
+        if (ResultNotify)
+        {
+            return ResultNotify;
+        }
+    }
+    return nullptr;
+}
