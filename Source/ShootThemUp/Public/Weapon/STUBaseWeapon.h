@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "STUBaseWeapon.generated.h"
 
+DECLARE_MULTICAST_DELEGATE(FOnClipEmptySignature);
+
 USTRUCT(BlueprintType)
 struct FAmmoData
 {
@@ -31,6 +33,11 @@ public:
 
     virtual void StartFire();
     virtual void StopFire();
+
+    void ChangeClip();
+    bool CanChangeClip();
+
+    FOnClipEmptySignature OnClipEmpty;
 
 protected:
     virtual void BeginPlay() override;
@@ -62,8 +69,6 @@ protected:
     void DecreaseAmmo();
     bool IsAmmoEmpty() const;
     bool IsClipEmpty() const;
-    bool IsClipFull() const;
-    void ChangeClip();
     void LogAmmo() const;
 
     bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;

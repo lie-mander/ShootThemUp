@@ -78,23 +78,24 @@ private:
     bool CanFire();
     bool CanReload();
 
+    void OnClipEmpty();
+    void ChangeClip();
+
     template <class T>
-    T* FindNotifyByClass(UAnimMontage* AnimMontage);
+    T* FindNotifyByClass(UAnimMontage* AnimMontage)
+    {
+        if (!AnimMontage) return nullptr;
+
+        const auto NotifyEvents = AnimMontage->Notifies;
+        for (auto NotifyEvent : NotifyEvents)
+        {
+            auto ResultNotify = Cast<T>(NotifyEvent.Notify);
+            if (ResultNotify)
+            {
+                return ResultNotify;
+            }
+        }
+        return nullptr;
+    }
 };
 
-template <class T>
-T* USTUWeaponComponent::FindNotifyByClass(UAnimMontage* AnimMontage)
-{
-    if (!AnimMontage) return nullptr;
-
-    const auto NotifyEvents = AnimMontage->Notifies;
-    for (auto NotifyEvent : NotifyEvents)
-    {
-        auto ResultNotify = Cast<T>(NotifyEvent.Notify);
-        if (ResultNotify)
-        {
-            return ResultNotify;
-        }
-    }
-    return nullptr;
-}
