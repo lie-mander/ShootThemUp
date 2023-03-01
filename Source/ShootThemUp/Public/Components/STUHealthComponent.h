@@ -20,6 +20,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Health")
     bool IsDead() const { return Health <= 0.0f; }
 
+    UFUNCTION(BlueprintCallable, Category = "Health")
+    float GetHealthPercent() const { return Health / MaxHealth; }
+
     float GetHealth() const { return Health; }
 
 protected:
