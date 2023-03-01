@@ -19,6 +19,8 @@ void ASTUBaseWeapon::BeginPlay()
 
     CurrentAmmo = DefaultAmmo;
     check(WeaponMesh);
+    checkf(DefaultAmmo.Bullets > 0, TEXT("Bullets count couldn`t be less or equal zero"));
+    checkf(DefaultAmmo.Clips > 0, TEXT("Clips count couldn`t be less or equal zero"));
 }
 
 void ASTUBaseWeapon::StartFire() {}
