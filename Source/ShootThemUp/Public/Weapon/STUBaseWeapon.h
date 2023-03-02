@@ -15,13 +15,15 @@ class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor
 public:
     ASTUBaseWeapon();
 
+    FOnClipEmptySignature OnClipEmpty;
+
     virtual void StartFire();
     virtual void StopFire();
 
     void ChangeClip();
     bool CanChangeClip();
 
-    FOnClipEmptySignature OnClipEmpty;
+    FWeaponUIData GetUIData() const { return UIData; }
 
 protected:
     virtual void BeginPlay() override;
@@ -40,6 +42,9 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     FAmmoData DefaultAmmo{10, 5, false};
+
+     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    FWeaponUIData UIData;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0.0", ClampMax = "180.0"))
     float MaxDegressForShoot = 90.0f;
