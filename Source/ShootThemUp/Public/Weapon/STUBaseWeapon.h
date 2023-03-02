@@ -24,6 +24,7 @@ public:
     bool CanChangeClip();
 
     FWeaponUIData GetUIData() const { return UIData; }
+    FAmmoData GetAmmoData() const { return CurrentAmmo; }
 
 protected:
     virtual void BeginPlay() override;
