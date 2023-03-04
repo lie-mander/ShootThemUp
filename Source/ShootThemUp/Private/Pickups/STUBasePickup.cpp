@@ -20,19 +20,50 @@ void ASTUBasePickup::BeginPlay()
 {
 	Super::BeginPlay();
 	
+    check(CollisionComponent);
 }
 
 void ASTUBasePickup::NotifyActorBeginOverlap(AActor* OtherActor) 
 {
     Super::NotifyActorBeginOverlap(OtherActor);
 
-	UE_LOG(LogBasePickup, Display, TEXT("Actor begin overlap"));
-    Destroy();
+    const auto PlayerPawn = Cast<APawn>(OtherActor);
+    if (GivePickupTo(PlayerPawn))
+    {
+        PickupWasTaken();
+    }
 }
 
 void ASTUBasePickup::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ASTUBasePickup::PickupWasTaken() 
+{
+    CollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
+    if (GetRootComponent())
+    {
+        GetRootComponent()->SetVisibility(false, true);
+    }
+    FTimerHandle RespawnTimer;
+    GetWorldTimerManager().SetTimer(RespawnTimer, this, &ASTUBasePickup::Respawn, RespawnTime);
+}
+
+void ASTUBasePickup::Respawn() 
+{
+    CollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
+
+    if (GetRootComponent())
+    {
+        GetRootComponent()->SetVisibility(true, true);
+    }
+}
+
+bool ASTUBasePickup::GivePickupTo(APawn* PlayerPawn)
+{
+    return false;
 }
 
