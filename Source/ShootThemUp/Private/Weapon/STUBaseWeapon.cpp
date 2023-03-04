@@ -92,7 +92,6 @@ void ASTUBaseWeapon::DecreaseAmmo()
 {
     if (CurrentAmmo.Bullets == 0)
     {
-        UE_LOG(LogBaseWeapon, Display, TEXT("Clip is empty"));
         return;
     }
     CurrentAmmo.Bullets--;
@@ -100,7 +99,7 @@ void ASTUBaseWeapon::DecreaseAmmo()
     if (IsClipEmpty() && !IsAmmoEmpty())
     {
         StopFire();
-        OnClipEmpty.Broadcast();
+        OnClipEmpty.Broadcast(this);
     }
 }
 
@@ -114,19 +113,63 @@ bool ASTUBaseWeapon::IsClipEmpty() const
     return CurrentAmmo.Bullets == 0;
 }
 
+bool ASTUBaseWeapon::IsAmmoFull() const
+{
+    return CurrentAmmo.Clips == DefaultAmmo.Clips &&
+        CurrentAmmo.Bullets == DefaultAmmo.Bullets;
+}
+
+bool ASTUBaseWeapon::TryToAddAmmo(int32 ClipsAmount)
+{
+    if (IsAmmoFull() || ClipsAmount <= 0) return false;
+
+    if (CurrentAmmo.Infinity)
+    {
+        UE_LOG(LogBaseWeapon, Display, TEXT("Ammo has infinity, reload bullets"));
+        CurrentAmmo.Bullets = DefaultAmmo.Bullets;
+        return true;
+    }
+
+    if (IsAmmoEmpty())
+    {
+        UE_LOG(LogBaseWeapon, Display, TEXT("Ammo was empty"));
+        CurrentAmmo.Clips = FMath::Clamp(ClipsAmount, 0, DefaultAmmo.Clips + 1);
+        OnClipEmpty.Broadcast(this);
+    }
+    else if (CurrentAmmo.Clips < DefaultAmmo.Clips)
+    {
+        const auto NextClipsAmount = CurrentAmmo.Clips + ClipsAmount;
+        if (DefaultAmmo.Clips - NextClipsAmount >= 0)
+        {
+            UE_LOG(LogBaseWeapon, Display, TEXT("Added only clips"));
+            CurrentAmmo.Clips = NextClipsAmount;
+        }
+        else
+        {
+            UE_LOG(LogBaseWeapon, Display, TEXT("Added clips and bullets"));
+            CurrentAmmo.Clips = DefaultAmmo.Clips;
+            CurrentAmmo.Bullets = DefaultAmmo.Bullets;
+        }
+    }
+    else
+    {
+        UE_LOG(LogBaseWeapon, Display, TEXT("Added only bullets"));
+        CurrentAmmo.Bullets = DefaultAmmo.Bullets;
+    }
+    return true;
+}
+
 void ASTUBaseWeapon::ChangeClip()
 {
     if (!CurrentAmmo.Infinity)
     {
         if (CurrentAmmo.Clips == 0)
         {
-            UE_LOG(LogBaseWeapon, Display, TEXT("No more clips"));
             return;
         }
         CurrentAmmo.Clips--;
     }
     CurrentAmmo.Bullets = DefaultAmmo.Bullets;
-    UE_LOG(LogBaseWeapon, Display, TEXT("--- Change clip ---"));
 }
 
 bool ASTUBaseWeapon::CanChangeClip()

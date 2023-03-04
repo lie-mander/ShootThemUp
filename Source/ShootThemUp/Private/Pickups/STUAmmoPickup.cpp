@@ -1,11 +1,19 @@
 // Shoot Them Up Game. All Rights Reserved
 
 #include "Pickups/STUAmmoPickup.h"
+#include "Components/STUHealthComponent.h"
+#include "Components/STUWeaponComponent.h"
+#include "STUUtils.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogHealthPickup, All, All)
 
 bool ASTUAmmoPickup::GivePickupTo(APawn* PlayerPawn)
 {
-    UE_LOG(LogHealthPickup, Display, TEXT("Ammo was taken"));
-    return true;
+    const auto HealthComponent = STUUtils::GetSTUPlayerComponent<USTUHealthComponent>(PlayerPawn);
+    if (!HealthComponent || HealthComponent->IsDead()) return false;
+
+    const auto WeaponComponent = STUUtils::GetSTUPlayerComponent<USTUWeaponComponent>(PlayerPawn);
+    if (!WeaponComponent) return false;
+
+    return WeaponComponent->TryToAddAmmo(WeaponClass, ClipsAmount);
 }
