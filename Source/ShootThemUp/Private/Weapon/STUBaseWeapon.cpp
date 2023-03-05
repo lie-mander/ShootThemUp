@@ -125,14 +125,12 @@ bool ASTUBaseWeapon::TryToAddAmmo(int32 ClipsAmount)
 
     if (CurrentAmmo.Infinity)
     {
-        UE_LOG(LogBaseWeapon, Display, TEXT("Ammo has infinity, reload bullets"));
         CurrentAmmo.Bullets = DefaultAmmo.Bullets;
         return true;
     }
 
     if (IsAmmoEmpty())
     {
-        UE_LOG(LogBaseWeapon, Display, TEXT("Ammo was empty"));
         CurrentAmmo.Clips = FMath::Clamp(ClipsAmount, 0, DefaultAmmo.Clips + 1);
         OnClipEmpty.Broadcast(this);
     }
@@ -141,19 +139,16 @@ bool ASTUBaseWeapon::TryToAddAmmo(int32 ClipsAmount)
         const auto NextClipsAmount = CurrentAmmo.Clips + ClipsAmount;
         if (DefaultAmmo.Clips - NextClipsAmount >= 0)
         {
-            UE_LOG(LogBaseWeapon, Display, TEXT("Added only clips"));
             CurrentAmmo.Clips = NextClipsAmount;
         }
         else
         {
-            UE_LOG(LogBaseWeapon, Display, TEXT("Added clips and bullets"));
             CurrentAmmo.Clips = DefaultAmmo.Clips;
             CurrentAmmo.Bullets = DefaultAmmo.Bullets;
         }
     }
     else
     {
-        UE_LOG(LogBaseWeapon, Display, TEXT("Added only bullets"));
         CurrentAmmo.Bullets = DefaultAmmo.Bullets;
     }
     return true;
