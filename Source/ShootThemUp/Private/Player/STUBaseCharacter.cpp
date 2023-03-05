@@ -119,7 +119,10 @@ void ASTUBaseCharacter::OnDeath()
 {
     UE_LOG(LogBaseCharacter, Display, TEXT("Player %s is dead"), *GetName());
 
-    PlayAnimMontage(DeathAnimMontage);
+    //PlayAnimMontage(DeathAnimMontage);
+    GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    GetMesh()->SetSimulatePhysics(true);
+
     GetCharacterMovement()->DisableMovement();
     SetLifeSpan(LifeSpanOnDeath);
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
