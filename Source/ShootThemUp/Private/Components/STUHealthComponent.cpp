@@ -9,6 +9,23 @@ USTUHealthComponent::USTUHealthComponent()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
+bool USTUHealthComponent::TryToAddHealth(float HealthAmount)
+{
+    if (IsDead() || IsFullHealth() || HealthAmount < 0) return false;
+
+    if (Health + HealthAmount > MaxHealth)
+    {
+        Health = MaxHealth;
+        UE_LOG(LogHealthComponent, Display, TEXT("Use lim to add HP"))
+    }
+    else
+    {
+        UE_LOG(LogHealthComponent, Display, TEXT("Just add HP"))
+        Health += HealthAmount;
+    }
+    return true;
+}
+
 // Called when the game starts
 void USTUHealthComponent::BeginPlay()
 {
@@ -41,6 +58,11 @@ void USTUHealthComponent::OnTakeAnyDamage(
         GetOwner()->GetWorldTimerManager().SetTimer(
         TimerAutoHeal, this, &USTUHealthComponent::AddHealthAutoHeal, HealUpdateRate, AutoHeal, AutoHealStartDelay);
     }
+}
+
+bool USTUHealthComponent::IsFullHealth() const
+{
+    return Health == MaxHealth;
 }
 
 void USTUHealthComponent::AddHealthAutoHeal()

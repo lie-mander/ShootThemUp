@@ -250,13 +250,13 @@ bool USTUWeaponComponent::GetWeaponAmmoData(FAmmoData& AmmoData) const
     return false;
 }
 
-bool USTUWeaponComponent::TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponClass, int32 Amount)
+bool USTUWeaponComponent::TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponClass, int32 ClipsAmount)
 {
     for (const auto Weapon : Weapons)
     {
         if (Weapon && Weapon->IsA(WeaponClass))
         {
-            return Weapon->TryToAddAmmo(Amount);
+            return Weapon->TryToAddAmmo(ClipsAmount);
         }
     }
     return false;

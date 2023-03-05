@@ -25,6 +25,8 @@ public:
 
     float GetHealth() const { return Health; }
 
+    bool TryToAddHealth(float HealthAmount);
+
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", meta = (ClampMin = "0.0", ClampMax = "1000.0"))
     float MaxHealth = 100.0f;
@@ -55,6 +57,7 @@ private:
     void OnTakeAnyDamage(
         AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
+    bool IsFullHealth() const;
     void AddHealthAutoHeal();
     void SetHealth(float NewHealth);
 };

@@ -26,7 +26,7 @@ public:
     FWeaponUIData GetUIData() const { return UIData; }
     FAmmoData GetAmmoData() const { return CurrentAmmo; }
 
-    bool TryToAddAmmo(int32 Amount);
+    bool TryToAddAmmo(int32 ClipsAmount);
 
 protected:
     virtual void BeginPlay() override;
