@@ -48,6 +48,8 @@ void USTUHealthComponent::OnTakeAnyDamage(
         GetOwner()->GetWorldTimerManager().SetTimer(
         TimerAutoHeal, this, &USTUHealthComponent::AddHealthAutoHeal, HealUpdateRate, AutoHeal, AutoHealStartDelay);
     }
+
+    PlayCameraShake();
 }
 
 bool USTUHealthComponent::IsFullHealth() const
@@ -69,4 +71,17 @@ void USTUHealthComponent::SetHealth(float NewHealth)
 {
     Health = FMath::Clamp(NewHealth, 0.0f, MaxHealth);
     OnHealthChanged.Broadcast(Health);
+}
+
+void USTUHealthComponent::PlayCameraShake()
+{
+    if (IsDead()) return;
+
+    const auto Player = Cast<APawn>(GetOwner());
+    if (!Player) return;
+
+    const auto Controller = Player->GetController<APlayerController>();
+    if (!Controller || !Controller->PlayerCameraManager) return;
+
+    Controller->PlayerCameraManager->StartCameraShake(CameraShake);
 }
