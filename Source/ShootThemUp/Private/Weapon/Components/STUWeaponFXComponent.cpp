@@ -2,26 +2,42 @@
 
 #include "Weapon/Components/STUWeaponFXComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/DecalComponent.h"
 
 USTUWeaponFXComponent::USTUWeaponFXComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+    PrimaryComponentTick.bCanEverTick = false;
 }
 
-void USTUWeaponFXComponent::PlayImpactFX(const FHitResult& Hit) 
+void USTUWeaponFXComponent::PlayImpactFX(const FHitResult& Hit)
 {
-    auto Effect = DefaultEffect;
+    auto ImpactData = DefaultImpactData;
 
     if (Hit.PhysMaterial.IsValid())
     {
         const auto PhysMaterial = Hit.PhysMaterial.Get();
-        if (EffectsMap.Contains(PhysMaterial))
+        if (ImpactDataMap.Contains(PhysMaterial))
         {
-            Effect = EffectsMap[PhysMaterial];
+            ImpactData = ImpactDataMap[PhysMaterial];
         }
     }
-    UE_LOG(LogTemp, Display, TEXT("%s"), *Hit.GetActor()->GetName());
-    UE_LOG(LogTemp, Display, TEXT("%s"), *Hit.BoneName.ToString());
-    
-    UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), Effect, Hit.ImpactPoint, Hit.ImpactNormal.Rotation());
+
+    // niagara
+    UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),  //
+        ImpactData.NiagaraEffect,                               //
+        Hit.ImpactPoint,                                        //
+        Hit.ImpactNormal.Rotation());
+
+    // decal
+    auto DecalComponent = UGameplayStatics::SpawnDecalAtLocation(GetWorld(),  //
+        ImpactData.DecalData.Material,                 //
+        ImpactData.DecalData.Size,                     //
+        Hit.ImpactPoint,                                //
+        Hit.ImpactNormal.Rotation());
+
+    if (DecalComponent)
+    {
+        DecalComponent->SetFadeOut(ImpactData.DecalData.LifeTime, ImpactData.DecalData.FadeOutTime);
+    }
 }
