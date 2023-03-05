@@ -13,20 +13,10 @@ bool USTUHealthComponent::TryToAddHealth(float HealthAmount)
 {
     if (IsDead() || IsFullHealth() || HealthAmount < 0) return false;
 
-    if (Health + HealthAmount > MaxHealth)
-    {
-        Health = MaxHealth;
-        UE_LOG(LogHealthComponent, Display, TEXT("Use lim to add HP"))
-    }
-    else
-    {
-        UE_LOG(LogHealthComponent, Display, TEXT("Just add HP"))
-        Health += HealthAmount;
-    }
+    SetHealth(Health + HealthAmount);
     return true;
 }
 
-// Called when the game starts
 void USTUHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -62,7 +52,7 @@ void USTUHealthComponent::OnTakeAnyDamage(
 
 bool USTUHealthComponent::IsFullHealth() const
 {
-    return Health == MaxHealth;
+    return FMath::IsNearlyEqual(Health, MaxHealth);
 }
 
 void USTUHealthComponent::AddHealthAutoHeal()

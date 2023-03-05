@@ -30,8 +30,10 @@ public:
     virtual void Tick(float DeltaTime) override;
 
 private:
+    float RotationYaw = 0.0f;
+
+    void GenerateRotationYaw();
     void PickupWasTaken();
     void Respawn();
-
     virtual bool GivePickupTo(APawn* PlayerPawn);
 };
