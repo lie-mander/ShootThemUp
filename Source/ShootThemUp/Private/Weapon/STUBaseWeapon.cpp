@@ -2,6 +2,8 @@
 
 #include "Weapon/STUBaseWeapon.h"
 #include "GameFramework/Character.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseWeapon, All, All)
 
@@ -173,16 +175,27 @@ bool ASTUBaseWeapon::CanChangeClip()
     return CurrentAmmo.Bullets < DefaultAmmo.Bullets && !IsAmmoEmpty();
 }
 
-void ASTUBaseWeapon::LogAmmo() const
-{
-    FString AmmoInfo = "Ammo: " + FString::FromInt(CurrentAmmo.Bullets) + " / ";
-    AmmoInfo += CurrentAmmo.Infinity ? "Infinity" : FString::FromInt(CurrentAmmo.Clips);
-    UE_LOG(LogBaseWeapon, Display, TEXT("%s"), *AmmoInfo);
-}
-
 void ASTUBaseWeapon::SetDegreesBetweenOwnerAndTarget(FHitResult& HitResult)
 {
     const FVector VectorToHit = (HitResult.ImpactPoint - GetMuzzleWorldLocation()).GetSafeNormal();
     const auto AngleBetween = FMath::Acos(FVector::DotProduct(GetMuzzleWorldForwardVector(), VectorToHit));
     DegreesBetweenOwnerAndTarget = FMath::RadiansToDegrees(AngleBetween);
+}
+
+UNiagaraComponent* ASTUBaseWeapon::SpawnMuzzleFX()
+{
+    return UNiagaraFunctionLibrary::SpawnSystemAttached(MuzzleFX,  //
+        WeaponMesh,                                                //
+        MuzzleSocketName,                                          //
+        FVector::ZeroVector,                                       //
+        FRotator::ZeroRotator,                                     //
+        EAttachLocation::SnapToTarget,                             //
+        true);
+}
+
+void ASTUBaseWeapon::LogAmmo() const
+{
+    FString AmmoInfo = "Ammo: " + FString::FromInt(CurrentAmmo.Bullets) + " / ";
+    AmmoInfo += CurrentAmmo.Infinity ? "Infinity" : FString::FromInt(CurrentAmmo.Clips);
+    UE_LOG(LogBaseWeapon, Display, TEXT("%s"), *AmmoInfo);
 }

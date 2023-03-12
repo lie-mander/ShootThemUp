@@ -7,6 +7,9 @@
 #include "STUCoreTypes.h"
 #include "STUBaseWeapon.generated.h"
 
+class UNiagaraSystem;
+class UNiagaraComponent;
+
 UCLASS()
 class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor
 {
@@ -46,8 +49,11 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     FAmmoData DefaultAmmo{10, 5, false};
 
-     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     FWeaponUIData UIData;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    UNiagaraSystem* MuzzleFX;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0.0", ClampMax = "180.0"))
     float MaxDegressForShoot = 90.0f;
@@ -63,6 +69,8 @@ protected:
     bool IsClipEmpty() const;
     bool IsAmmoFull() const;
     void LogAmmo() const;
+
+    UNiagaraComponent* SpawnMuzzleFX();
 
     bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
     APlayerController* GetPlayerController() const;
