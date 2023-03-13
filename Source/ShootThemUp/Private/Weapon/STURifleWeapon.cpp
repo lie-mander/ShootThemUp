@@ -5,12 +5,12 @@
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 
-ASTURifleWeapon::ASTURifleWeapon() 
+ASTURifleWeapon::ASTURifleWeapon()
 {
     WeaponFXComponent = CreateDefaultSubobject<USTUWeaponFXComponent>("WeaponFXComponent");
 }
 
-void ASTURifleWeapon::BeginPlay() 
+void ASTURifleWeapon::BeginPlay()
 {
     Super::BeginPlay();
 
@@ -46,28 +46,55 @@ void ASTURifleWeapon::MakeShot()
         return;
     }
 
-    FHitResult HitResult;
-    MakeHit(HitResult, TraceStart, TraceEnd);
+    FHitResult HitResultFromView;
+    MakeHit(HitResultFromView, TraceStart, TraceEnd);
+
     FVector TraceEndFX = TraceEnd;
 
-    if (HitResult.bBlockingHit && GetDegreesBetweenOwnerAndTarget() <= MaxDegressForShoot)
+    if (HitResultFromView.bBlockingHit && GetDegreesBetweenOwnerAndTarget() <= MaxDegressForShoot)
     {
-        TraceEndFX = HitResult.ImpactPoint;
-        MakeDamage(HitResult);
-        WeaponFXComponent->PlayImpactFX(HitResult);
-    }
-    else if (HitResult.bBlockingHit)
-    {
-        MakeHit(HitResult, GetMuzzleWorldLocation(), TraceEnd);
-        if (HitResult.bBlockingHit)
+        FHitResult HitResultFromMuzzle;
+        MakeHit(HitResultFromMuzzle, GetMuzzleWorldLocation(), HitResultFromView.ImpactPoint);
+
+        if (HitResultFromMuzzle.bBlockingHit)
         {
-            MakeDamage(HitResult);
-            WeaponFXComponent->PlayImpactFX(HitResult);
+            DoShotOperators(TraceEndFX, HitResultFromMuzzle);
+        }
+        else
+        {
+            DoShotOperators(TraceEndFX, HitResultFromView);
+        }
+    }
+    else if (HitResultFromView.bBlockingHit)
+    {
+        MakeHit(HitResultFromView, GetMuzzleWorldLocation(), TraceEnd);
+
+        if (HitResultFromView.bBlockingHit)
+        {
+            MakeDamage(HitResultFromView);
+            WeaponFXComponent->PlayImpactFX(HitResultFromView);
+        }
+    }
+    else
+    {
+        FHitResult HitResultFromMuzzle;
+        MakeHit(HitResultFromMuzzle, GetMuzzleWorldLocation(), TraceEnd);
+
+        if (HitResultFromMuzzle.bBlockingHit)
+        {
+            DoShotOperators(TraceEndFX, HitResultFromMuzzle);
         }
     }
 
     SpawnTraceFX(GetMuzzleWorldLocation(), TraceEndFX);
     DecreaseAmmo();
+}
+
+void ASTURifleWeapon::DoShotOperators(FVector& TraceEndFX, FHitResult& HitResult)
+{
+    TraceEndFX = HitResult.ImpactPoint;
+    MakeDamage(HitResult);
+    WeaponFXComponent->PlayImpactFX(HitResult);
 }
 
 bool ASTURifleWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
@@ -83,7 +110,7 @@ bool ASTURifleWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
     return true;
 }
 
-void ASTURifleWeapon::InitMuzzleFX() 
+void ASTURifleWeapon::InitMuzzleFX()
 {
     if (!MuzzleFXComponent)
     {
@@ -92,7 +119,7 @@ void ASTURifleWeapon::InitMuzzleFX()
     SetMuzzleFXVisibility(true);
 }
 
-void ASTURifleWeapon::SetMuzzleFXVisibility(bool Visible) 
+void ASTURifleWeapon::SetMuzzleFXVisibility(bool Visible)
 {
     if (MuzzleFXComponent)
     {
@@ -101,7 +128,7 @@ void ASTURifleWeapon::SetMuzzleFXVisibility(bool Visible)
     }
 }
 
-void ASTURifleWeapon::SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd) 
+void ASTURifleWeapon::SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd)
 {
     const auto TraceFXCmponent = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), TraceFX, TraceStart);
     if (TraceFXCmponent)
