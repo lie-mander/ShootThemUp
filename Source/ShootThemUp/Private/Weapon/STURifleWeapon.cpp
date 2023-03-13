@@ -61,7 +61,6 @@ void ASTURifleWeapon::MakeShot()
         MakeHit(HitResult, GetMuzzleWorldLocation(), TraceEnd);
         if (HitResult.bBlockingHit)
         {
-            DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 15.0f, 24, FColor::Yellow, false, 4.0f);
             MakeDamage(HitResult);
             WeaponFXComponent->PlayImpactFX(HitResult);
         }
