@@ -20,7 +20,7 @@ void USTUFindEnemyService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* No
         const auto PerceptionComponent = STUUtils::GetSTUPlayerComponent<USTUAIPerceptionComponent>(Controller);
         if (PerceptionComponent)
         {
-            Blackboard->SetValueAsObject(EnemyActor.SelectedKeyName, PerceptionComponent->GetClosestEnemy());
+            Blackboard->SetValueAsObject(EnemyActorKey.SelectedKeyName, PerceptionComponent->GetClosestEnemy());
         }
     }
 
