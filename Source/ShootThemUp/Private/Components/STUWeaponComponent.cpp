@@ -92,6 +92,7 @@ void USTUWeaponComponent::StopFire()
 
 void USTUWeaponComponent::NextWeapon()
 {
+    UE_LOG(LogWeaponComponent, Display, TEXT("Weapon Component"));
     if (!CanEquip()) return;
     EquipWeapon();
 }

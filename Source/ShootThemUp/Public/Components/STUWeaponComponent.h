@@ -22,6 +22,8 @@ public:
     virtual void NextWeapon();
     void Reload();
 
+    bool CanEquip();
+
     bool GetWeaponUIData(FWeaponUIData& UIData) const;
     bool GetWeaponAmmoData(FAmmoData& AmmoData) const;
 
@@ -45,7 +47,6 @@ protected:
 
     void EquipWeapon();
 
-    bool CanEquip();
     bool CanFire();
 
     int32 CurrentWeaponIndex = 0;
