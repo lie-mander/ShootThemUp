@@ -26,6 +26,7 @@ public:
     void ChangeClip();
     bool CanChangeClip();
     bool IsAmmoEmpty() const;
+    bool IsAmmoFull() const;
 
     FWeaponUIData GetUIData() const { return UIData; }
     FAmmoData GetAmmoData() const { return CurrentAmmo; }
@@ -67,7 +68,6 @@ protected:
 
     void DecreaseAmmo();
     bool IsClipEmpty() const;
-    bool IsAmmoFull() const;
     void LogAmmo() const;
 
     UNiagaraComponent* SpawnMuzzleFX();
