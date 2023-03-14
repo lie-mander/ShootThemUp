@@ -17,9 +17,9 @@ class SHOOTTHEMUP_API USTUWeaponComponent : public UActorComponent
 public:
     USTUWeaponComponent();
 
-    void StartFire();
+    virtual void StartFire();
     void StopFire();
-    void NextWeapon();
+    virtual void NextWeapon();
     void Reload();
 
     bool GetWeaponUIData(FWeaponUIData& UIData) const;
@@ -43,23 +43,27 @@ protected:
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-private:
+    void EquipWeapon();
+
+    bool CanEquip();
+    bool CanFire();
+
+    int32 CurrentWeaponIndex = 0;
+
     UPROPERTY()
     ASTUBaseWeapon* CurrentWeapon = nullptr;
 
     UPROPERTY()
-    UAnimMontage* CurrentReloadAnimMontage = nullptr;
-
-    UPROPERTY()
     TArray<ASTUBaseWeapon*> Weapons;
 
-    int32 CurrentWeaponIndex = 0;
+private:
+    UPROPERTY()
+    UAnimMontage* CurrentReloadAnimMontage = nullptr;
 
     bool EquipAnimInProgress = false;
     bool ReloadAnimInProgress = false;
 
     void AttachWeaponToSocket(ASTUBaseWeapon* Weapon, USceneComponent* Mesh, const FName SocketName);
-    void EquipWeapon();
     void SpawnWeapons();
     void PlayAnimMontage(UAnimMontage* Animation);
 
@@ -68,11 +72,8 @@ private:
     void OnWeaponChanged(USkeletalMeshComponent* MeshComp);
     void OnReloadFinished(USkeletalMeshComponent* MeshComp);
 
-    bool CanEquip();
-    bool CanFire();
     bool CanReload();
 
     void OnClipEmpty(ASTUBaseWeapon* AmmoEmptyWeapon);
     void ChangeClip();
 };
-
