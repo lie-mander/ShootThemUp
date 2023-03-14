@@ -7,25 +7,30 @@ DEFINE_LOG_CATEGORY_STATIC(LogBasePickup, All, All)
 
 ASTUBasePickup::ASTUBasePickup()
 {
-	PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = true;
 
-	CollisionComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
+    CollisionComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
     CollisionComponent->InitSphereRadius(50.0f);
     CollisionComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     CollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
     SetRootComponent(CollisionComponent);
 }
 
+bool ASTUBasePickup::CouldBeTaken() const
+{
+    return !GetWorldTimerManager().IsTimerActive(RespawnTimerHandle);
+}
+
 void ASTUBasePickup::BeginPlay()
 {
-	Super::BeginPlay();
-	
+    Super::BeginPlay();
+
     check(CollisionComponent);
 
     GenerateRotationYaw();
 }
 
-void ASTUBasePickup::NotifyActorBeginOverlap(AActor* OtherActor) 
+void ASTUBasePickup::NotifyActorBeginOverlap(AActor* OtherActor)
 {
     Super::NotifyActorBeginOverlap(OtherActor);
 
@@ -38,7 +43,7 @@ void ASTUBasePickup::NotifyActorBeginOverlap(AActor* OtherActor)
 
 void ASTUBasePickup::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+    Super::Tick(DeltaTime);
 
     AddActorLocalRotation(FRotator(0.0f, RotationYaw, 0.0f));
 }
@@ -51,11 +56,10 @@ void ASTUBasePickup::PickupWasTaken()
     {
         GetRootComponent()->SetVisibility(false, true);
     }
-    FTimerHandle RespawnTimer;
-    GetWorldTimerManager().SetTimer(RespawnTimer, this, &ASTUBasePickup::Respawn, RespawnTime);
+    GetWorldTimerManager().SetTimer(RespawnTimerHandle, this, &ASTUBasePickup::Respawn, RespawnTime);
 }
 
-void ASTUBasePickup::Respawn() 
+void ASTUBasePickup::Respawn()
 {
     GenerateRotationYaw();
     CollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
@@ -71,9 +75,8 @@ bool ASTUBasePickup::GivePickupTo(APawn* PlayerPawn)
     return false;
 }
 
-void ASTUBasePickup::GenerateRotationYaw() 
+void ASTUBasePickup::GenerateRotationYaw()
 {
     const auto Direction = FMath::RandBool() ? 1.0 : -1.0;
     RotationYaw = FMath::RandRange(1.0f, 2.0f) * Direction;
 }
-
