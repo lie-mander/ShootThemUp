@@ -73,7 +73,6 @@ protected:
     UNiagaraComponent* SpawnMuzzleFX();
 
     bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
-    APlayerController* GetPlayerController() const;
     FVector GetMuzzleWorldLocation() const;
     FVector GetMuzzleWorldForwardVector() const;
     float GetDegreesBetweenOwnerAndTarget() const;
@@ -82,4 +81,6 @@ protected:
 private:
     float DegreesBetweenOwnerAndTarget = 0.0f;
     FAmmoData CurrentAmmo;
+
+    AController* GetController() const;
 };

@@ -1,12 +1,13 @@
 // Shoot Them Up Game. All Rights Reserved
 
 #include "Components/STUHealthComponent.h"
+#include "STUGameModeBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogHealthComponent, All, All)
 
 USTUHealthComponent::USTUHealthComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+    PrimaryComponentTick.bCanEverTick = false;
 }
 
 bool USTUHealthComponent::TryToAddHealth(float HealthAmount)
@@ -19,13 +20,13 @@ bool USTUHealthComponent::TryToAddHealth(float HealthAmount)
 
 void USTUHealthComponent::BeginPlay()
 {
-	Super::BeginPlay();
-	
+    Super::BeginPlay();
+
     check(MaxHealth > 0);
 
-	SetHealth(MaxHealth);
+    SetHealth(MaxHealth);
 
-	AActor* Component = GetOwner();
+    AActor* Component = GetOwner();
     if (Component)
     {
         Component->OnTakeAnyDamage.AddDynamic(this, &USTUHealthComponent::OnTakeAnyDamage);
@@ -41,12 +42,13 @@ void USTUHealthComponent::OnTakeAnyDamage(
     if (IsDead())
     {
         GetOwner()->GetWorldTimerManager().ClearTimer(TimerAutoHeal);
+        Killed(InstigatedBy);
         OnDeath.Broadcast();
     }
     else if (AutoHeal)
     {
         GetOwner()->GetWorldTimerManager().SetTimer(
-        TimerAutoHeal, this, &USTUHealthComponent::AddHealthAutoHeal, HealUpdateRate, AutoHeal, AutoHealStartDelay);
+            TimerAutoHeal, this, &USTUHealthComponent::AddHealthAutoHeal, HealUpdateRate, AutoHeal, AutoHealStartDelay);
     }
 
     PlayCameraShake();
@@ -67,7 +69,7 @@ void USTUHealthComponent::AddHealthAutoHeal()
     SetHealth(Health + HealModifier);
 }
 
-void USTUHealthComponent::SetHealth(float NewHealth) 
+void USTUHealthComponent::SetHealth(float NewHealth)
 {
     const auto NextHealth = FMath::Clamp(NewHealth, 0.0f, MaxHealth);
     const auto HealthDelta = NextHealth - Health;
@@ -87,4 +89,19 @@ void USTUHealthComponent::PlayCameraShake()
     if (!Controller || !Controller->PlayerCameraManager) return;
 
     Controller->PlayerCameraManager->StartCameraShake(CameraShake);
+}
+
+void USTUHealthComponent::Killed(AController* KillerController)
+{
+    if (!GetWorld()) return;
+    const auto GameMode = Cast<ASTUGameModeBase>(GetWorld()->GetAuthGameMode());
+
+    if (!GameMode) return;
+    const auto Player = Cast<APawn>(GetOwner());
+    const auto VictimController = Player ? Player->Controller : nullptr;
+
+    if (VictimController)
+    {
+        GameMode->Killed(KillerController, VictimController);
+    }
 }

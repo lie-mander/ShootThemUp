@@ -31,14 +31,6 @@ void ASTUBaseWeapon::StopFire() {}
 
 void ASTUBaseWeapon::MakeShot() {}
 
-APlayerController* ASTUBaseWeapon::GetPlayerController() const
-{
-    ACharacter* Player = Cast<ACharacter>(GetOwner());
-    if (!Player) return nullptr;
-
-    return Player->GetController<APlayerController>();
-}
-
 bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const
 {
     const auto STUCharacter = Cast<ACharacter>(GetOwner());
@@ -46,7 +38,7 @@ bool ASTUBaseWeapon::GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRot
 
     if (STUCharacter->IsPlayerControlled())
     {
-        const auto Controller = GetPlayerController();
+        const auto Controller = STUCharacter->GetController<APlayerController>();
         if (!Controller) return false;
 
         Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
@@ -100,7 +92,7 @@ void ASTUBaseWeapon::MakeDamage(FHitResult& HitResult)
 {
     auto Target = Cast<ACharacter>(HitResult.GetActor());
     if (!Target) return;
-    Target->TakeDamage(WeaponDamage, FDamageEvent(), GetPlayerController(), this);
+    Target->TakeDamage(WeaponDamage, FDamageEvent(), GetController(), this);
 }
 
 void ASTUBaseWeapon::DecreaseAmmo()
@@ -210,4 +202,10 @@ void ASTUBaseWeapon::LogAmmo() const
     FString AmmoInfo = "Ammo: " + FString::FromInt(CurrentAmmo.Bullets) + " / ";
     AmmoInfo += CurrentAmmo.Infinity ? "Infinity" : FString::FromInt(CurrentAmmo.Clips);
     UE_LOG(LogBaseWeapon, Display, TEXT("%s"), *AmmoInfo);
+}
+
+AController* ASTUBaseWeapon::GetController() const
+{
+    const auto Pawn = Cast<APawn>(GetOwner());
+    return Pawn ? Pawn->GetController() : nullptr;
 }
