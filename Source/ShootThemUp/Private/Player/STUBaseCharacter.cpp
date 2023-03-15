@@ -117,8 +117,6 @@ void ASTUBaseCharacter::OnStopRunning()
 
 void ASTUBaseCharacter::OnDeath()
 {
-    UE_LOG(LogBaseCharacter, Display, TEXT("Player %s is dead"), *GetName());
-
     //PlayAnimMontage(DeathAnimMontage);
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     GetMesh()->SetSimulatePhysics(true);
@@ -143,10 +141,8 @@ void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit)
 {
     const auto FallVelocity = -GetVelocity().Z;
     if (FallVelocity < LandedDamageVelocity.X) return;
-    UE_LOG(LogBaseCharacter, Display, TEXT("Player is fall, velocity: %f"), FallVelocity);
 
     const auto FallDamage = FMath::GetMappedRangeValueClamped(LandedDamageVelocity, LandedDamage, FallVelocity);
-    UE_LOG(LogBaseCharacter, Display, TEXT("Player is fall, damage: %f"), FallDamage);
 
     TakeDamage(FallDamage, FDamageEvent(), nullptr, nullptr);
 }

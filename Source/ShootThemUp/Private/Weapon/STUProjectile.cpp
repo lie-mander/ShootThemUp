@@ -41,7 +41,6 @@ void ASTUProjectile::BeginPlay()
 void ASTUProjectile::OnProjectileHit(
     UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-    UE_LOG(LogTemp, Display, TEXT("Hit"));
     if (!GetWorld()) return;
     MovementComponent->StopMovementImmediately();
     //DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 24, FColor::Green, false, 5.0f);

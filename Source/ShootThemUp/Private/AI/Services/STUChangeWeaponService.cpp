@@ -22,7 +22,6 @@ void USTUChangeWeaponService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8*
             const auto Chance = FMath::RandRange(0.0, 1.0);
             if (Chance < Probability && WeaponComponent->CanEquip())
             {
-                UE_LOG(LogTemp, Display, TEXT("Lucky, chance = %f"), Chance);
                 WeaponComponent->NextWeapon();
             }
         }

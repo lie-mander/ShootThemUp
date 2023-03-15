@@ -92,7 +92,6 @@ void USTUWeaponComponent::StopFire()
 
 void USTUWeaponComponent::NextWeapon()
 {
-    UE_LOG(LogWeaponComponent, Display, TEXT("Weapon Component"));
     if (!CanEquip()) return;
     EquipWeapon();
 }
@@ -174,7 +173,6 @@ void USTUWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComp)
 {
     ACharacter* Character = Cast<ACharacter>(GetOwner());
     if (!Character || Character->GetMesh() != MeshComp) return;
-    UE_LOG(LogWeaponComponent, Display, TEXT("Reload Finished"));
     ReloadAnimInProgress = false;
 }
 

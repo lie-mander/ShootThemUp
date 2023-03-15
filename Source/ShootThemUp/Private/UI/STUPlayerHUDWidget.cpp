@@ -58,7 +58,6 @@ void USTUPlayerHUDWidget::OnHealthChanged(float Health, float HealthDelta)
 {
     if (HealthDelta < 0.0f)
     {
-        UE_LOG(LogTemp, Display, TEXT("%f"), HealthDelta);
         OnTakeDamage();
     }
 }
