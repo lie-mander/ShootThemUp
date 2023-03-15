@@ -20,6 +20,10 @@ public:
     virtual void StartPlay() override;
     virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 
+    float GetRoundCountDown() const { return RoundCountDown; }
+    float GetCurrentRoundNum() const { return CurrentRound; }
+    FGameData GetGameData() const { return GameData; }
+
     void Killed(AController* KillerController, AController* VictimController);
 
 protected:

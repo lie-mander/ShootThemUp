@@ -4,6 +4,8 @@
 #include "Components/STUHealthComponent.h"
 #include "Components/STUWeaponComponent.h"
 #include "STUUtils.h"
+#include "STUGameModeBase.h"
+#include "Player/STUPlayerState.h"
 
 bool USTUPlayerHUDWidget::Initialize()
 {
@@ -54,10 +56,45 @@ bool USTUPlayerHUDWidget::IsPlayerSpectating() const
     return Controller && Controller->GetStateName() == NAME_Spectating;
 }
 
-void USTUPlayerHUDWidget::OnHealthChanged(float Health, float HealthDelta) 
+int32 USTUPlayerHUDWidget::GetCurrentRoundTime() const
+{
+    return GetGameMode() ? GetGameMode()->GetRoundCountDown() : 0;
+}
+
+int32 USTUPlayerHUDWidget::GetCurrentRoundNum() const
+{
+    return GetGameMode() ? GetGameMode()->GetCurrentRoundNum() : 0;
+}
+
+int32 USTUPlayerHUDWidget::GetRoundsNum() const
+{
+    return GetGameMode() ? GetGameMode()->GetGameData().RoundsNum : 0;
+}
+
+int32 USTUPlayerHUDWidget::GetKillsNum() const
+{
+    const auto Pawn = GetOwningPlayerPawn();
+    if (!Pawn) return 0;
+
+    const auto Controller = Pawn->GetController();
+    if (!Controller) return 0;
+
+    const auto PlayerState = Cast<ASTUPlayerState>(Controller->PlayerState);
+    if (!PlayerState) return 0;
+
+    return PlayerState->GetKillsNum();
+}
+
+void USTUPlayerHUDWidget::OnHealthChanged(float Health, float HealthDelta)
 {
     if (HealthDelta < 0.0f)
     {
         OnTakeDamage();
     }
+}
+
+ASTUGameModeBase* USTUPlayerHUDWidget::GetGameMode() const
+{
+    if (!GetWorld()) return nullptr;
+    return Cast<ASTUGameModeBase>(GetWorld()->GetAuthGameMode());
 }
