@@ -62,8 +62,6 @@ void ASTUGameModeBase::StartRound()
 
 void ASTUGameModeBase::GameTimerUpdate() 
 {
-    UE_LOG(LogGameModeBase, Display, TEXT("Time: %i, Round %i/%i"), RoundCountDown, CurrentRound, GameData.RoundsNum);
-
     if (--RoundCountDown == 0)
     {
         GetWorldTimerManager().ClearTimer(GameRountTimerHandle);
