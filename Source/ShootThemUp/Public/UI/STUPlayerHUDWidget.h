@@ -50,5 +50,7 @@ public:
 private:
     void OnHealthChanged(float Health, float HealthDelta);
 
+    void OnChangedPawn(APawn* Pawn);
+
     ASTUGameModeBase* GetGameMode() const;
 };
