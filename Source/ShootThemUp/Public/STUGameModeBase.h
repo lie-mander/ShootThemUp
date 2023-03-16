@@ -25,6 +25,7 @@ public:
     FGameData GetGameData() const { return GameData; }
 
     void Killed(AController* KillerController, AController* VictimController);
+    void RespawnRequest(AController* ControllerToRespawn);
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
@@ -42,6 +43,7 @@ private:
     void GameTimerUpdate();
     void ResetPlayers();
     void ResetOnePlayer(AController* Controller);
+    void StartRespawn(AController* Controller);
 
     void CreateTeamsInfo();
     FLinearColor DetermineColorByTeamID(int32 TeamID) const;
