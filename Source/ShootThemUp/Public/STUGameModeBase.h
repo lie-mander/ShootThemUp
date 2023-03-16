@@ -44,6 +44,7 @@ private:
     void ResetPlayers();
     void ResetOnePlayer(AController* Controller);
     void StartRespawn(AController* Controller);
+    void GameOver();
 
     void CreateTeamsInfo();
     FLinearColor DetermineColorByTeamID(int32 TeamID) const;
