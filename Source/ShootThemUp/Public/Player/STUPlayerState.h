@@ -19,6 +19,7 @@ public:
     FLinearColor GetTeamColor() const { return TeamColor; }
 
     void AddKill() { KillsNum++; }
+    void SubKills(int32 Amount);
     int32 GetKillsNum() const { return KillsNum; }
 
     void AddDeath() { DeathsNum++; }

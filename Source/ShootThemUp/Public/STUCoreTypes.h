@@ -108,4 +108,7 @@ struct FGameData
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "1", ClampMax = "100"))
     int32 MinRoundTimeToRespawn = 10;  // in seconds
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+    int32 PenaltyKill = 2;
 };

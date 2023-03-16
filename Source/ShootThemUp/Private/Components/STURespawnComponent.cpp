@@ -22,7 +22,6 @@ bool USTURespawnComponent::IsRespawnInProgress() const
 
 void USTURespawnComponent::RespawnTimerUpdate() 
 {
-    UE_LOG(LogTemp, Display, TEXT("%i"), RespawnCountDown);
     if (--RespawnCountDown == 0)
     {
         if (!GetWorld()) return;

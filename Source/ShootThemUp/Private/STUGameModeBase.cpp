@@ -153,7 +153,12 @@ void ASTUGameModeBase::Killed(AController* KillerController, AController* Victim
     const auto KillerPlayerState = KillerController ? Cast<ASTUPlayerState>(KillerController->PlayerState) : nullptr;
     const auto VictimPlayerState = VictimController ? Cast<ASTUPlayerState>(VictimController->PlayerState) : nullptr;
 
-    if (KillerPlayerState)
+    const auto IsOneTeam = KillerPlayerState->GetTeamID() == VictimPlayerState->GetTeamID();
+    if (KillerPlayerState && IsOneTeam)
+    {
+        KillerPlayerState->SubKills(GameData.PenaltyKill);
+    }
+    else if (KillerPlayerState)
     {
         KillerPlayerState->AddKill();
     }
@@ -179,8 +184,6 @@ void ASTUGameModeBase::StartRespawn(AController* Controller)
 
 void ASTUGameModeBase::RespawnRequest(AController* ControllerToRespawn)
 {
-    if (!ControllerToRespawn || ControllerToRespawn->GetPawn()) return;
-
     ResetOnePlayer(ControllerToRespawn);
 }
 
