@@ -6,7 +6,7 @@ class UActorComponent;
 class STUUtils
 {
 public:
-	template <typename T>
+    template <typename T>
     static T* GetSTUPlayerComponent(AActor* Pawn)
     {
         if (!Pawn) return nullptr;
@@ -24,4 +24,6 @@ public:
 
         return PlayerState1 && PlayerState2 && PlayerState1->GetTeamID() != PlayerState2->GetTeamID();
     }
+
+    static FText TextFromInt(int32 Number) { return FText::FromString(FString::FromInt(Number)); }
 };
