@@ -229,3 +229,27 @@ void ASTUGameModeBase::GameOver()
 
     SetMatchState(ESTUMatchState::GameOver);
 }
+
+bool ASTUGameModeBase::SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate)
+{
+    const auto IsPauseSet = Super::SetPause(PC, CanUnpauseDelegate);
+
+    if (IsPauseSet)
+    {
+        SetMatchState(ESTUMatchState::Pause);
+    }
+
+    return IsPauseSet;
+}
+
+bool ASTUGameModeBase::ClearPause()
+{
+    const auto IsClearPause = Super::ClearPause();
+
+    if (IsClearPause)
+    {
+        SetMatchState(ESTUMatchState::InProgress);
+    }
+
+    return IsClearPause;
+}
