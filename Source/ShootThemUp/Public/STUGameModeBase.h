@@ -27,6 +27,9 @@ public:
     void Killed(AController* KillerController, AController* VictimController);
     void RespawnRequest(AController* ControllerToRespawn);
 
+    FOnMatchStateChangedSignature OnMatchStateChanged;
+
+
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
     TSubclassOf<AAIController> AIControllerClass;
@@ -51,7 +54,11 @@ private:
     void SetPlayerColor(AController* Controller);
     void LogPlayerInfo() const;
 
+    void SetMatchState(ESTUMatchState State);
+
     FTimerHandle GameRountTimerHandle;
+
+    ESTUMatchState MatchState = ESTUMatchState::WaitingForStart;
 
     int32 CurrentRound = 0;
     int32 RoundCountDown = 0;

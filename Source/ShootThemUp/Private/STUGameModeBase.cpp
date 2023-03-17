@@ -28,6 +28,8 @@ void ASTUGameModeBase::StartPlay()
     CreateTeamsInfo();
     StartRound();
 
+    SetMatchState(ESTUMatchState::InProgress);
+
     CurrentRound = 1;
 }
 
@@ -203,6 +205,14 @@ void ASTUGameModeBase::LogPlayerInfo() const
     }
 }
 
+void ASTUGameModeBase::SetMatchState(ESTUMatchState State)
+{
+    if (MatchState == State) return;
+
+    MatchState = State;
+    OnMatchStateChanged.Broadcast(MatchState);
+}
+
 void ASTUGameModeBase::GameOver() 
 {
     UE_LOG(LogGameModeBase, Display, TEXT("-------- GAME OVER --------"));
@@ -216,4 +226,6 @@ void ASTUGameModeBase::GameOver()
             Pawn->DisableInput(nullptr);
         }
     }
+
+    SetMatchState(ESTUMatchState::GameOver);
 }

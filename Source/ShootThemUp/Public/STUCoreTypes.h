@@ -112,3 +112,14 @@ struct FGameData
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
     int32 PenaltyKill = 2;
 };
+
+UENUM(BlueprintType)
+enum class ESTUMatchState : uint8
+{
+    WaitingForStart = 0,
+    InProgress,
+    Pause,
+    GameOver
+};
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnMatchStateChangedSignature, ESTUMatchState);
