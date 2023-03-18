@@ -7,15 +7,15 @@
 #include "STUGameModeBase.h"
 #include "Player/STUPlayerState.h"
 
-bool USTUPlayerHUDWidget::Initialize()
+void USTUPlayerHUDWidget::NativeOnInitialized()
 {
+    Super::NativeOnInitialized();
+
     OnChangedPawn(GetOwningPlayerPawn());
     if (GetOwningPlayer())
     {
         GetOwningPlayer()->GetOnNewPawnNotifier().AddUObject(this, &USTUPlayerHUDWidget::OnChangedPawn);
     }
-
-    return Super::Initialize();
 }
 
 void USTUPlayerHUDWidget::OnChangedPawn(APawn* Pawn) 

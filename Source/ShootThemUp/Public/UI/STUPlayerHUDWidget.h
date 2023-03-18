@@ -45,7 +45,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "UI")
     int32 GetKillsNum() const;
 
-    virtual bool Initialize() override;
+    virtual void NativeOnInitialized() override;
 
 private:
     void OnHealthChanged(float Health, float HealthDelta);
