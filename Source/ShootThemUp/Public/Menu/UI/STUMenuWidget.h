@@ -19,7 +19,13 @@ protected:
     UPROPERTY(meta = (BindWidget))
     UButton* StartGameButton;
 
+    UPROPERTY(meta = (BindWidget))
+    UButton* QuitGameButton;
+
 private:
     UFUNCTION()
     void OnStartGame();
+
+    UFUNCTION()
+    void OnQuitGame();
 };
