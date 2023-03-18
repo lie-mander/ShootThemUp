@@ -9,10 +9,11 @@
 #include "STUUtils.h"
 #include "Components/STURespawnComponent.h"
 #include "EngineUtils.h"
+#include "STUGameInstance.h"
 
-DEFINE_LOG_CATEGORY_STATIC(LogGameModeBase, All, All);
+DEFINE_LOG_CATEGORY_STATIC(LogSTUGameModeBase, All, All);
 
-ASTUGameModeBase::ASTUGameModeBase() 
+ASTUGameModeBase::ASTUGameModeBase()
 {
     PlayerControllerClass = ASTUPlayerController::StaticClass();
     DefaultPawnClass = ASTUBaseCharacter::StaticClass();
@@ -20,7 +21,7 @@ ASTUGameModeBase::ASTUGameModeBase()
     PlayerStateClass = ASTUPlayerState::StaticClass();
 }
 
-void ASTUGameModeBase::StartPlay() 
+void ASTUGameModeBase::StartPlay()
 {
     Super::StartPlay();
 
@@ -31,6 +32,12 @@ void ASTUGameModeBase::StartPlay()
     SetMatchState(ESTUMatchState::InProgress);
 
     CurrentRound = 1;
+
+    auto Instance = GetWorld()->GetGameInstance<USTUGameInstance>();
+    if (Instance)
+    {
+        UE_LOG(LogSTUGameModeBase, Display, TEXT("%s"), *Instance->TestString);
+    }
 }
 
 UClass* ASTUGameModeBase::GetDefaultPawnClassForController_Implementation(AController* InController)
@@ -57,13 +64,13 @@ void ASTUGameModeBase::SpawnBots()
     }
 }
 
-void ASTUGameModeBase::StartRound() 
+void ASTUGameModeBase::StartRound()
 {
     RoundCountDown = GameData.RoundTime;
     GetWorldTimerManager().SetTimer(GameRountTimerHandle, this, &ASTUGameModeBase::GameTimerUpdate, 1.0f, true);
 }
 
-void ASTUGameModeBase::GameTimerUpdate() 
+void ASTUGameModeBase::GameTimerUpdate()
 {
     if (--RoundCountDown == 0)
     {
@@ -72,7 +79,7 @@ void ASTUGameModeBase::GameTimerUpdate()
         if (CurrentRound + 1 <= GameData.RoundsNum)
         {
             CurrentRound++;
-            ResetPlayers(); 
+            ResetPlayers();
             StartRound();
         }
         else
@@ -92,7 +99,7 @@ void ASTUGameModeBase::ResetPlayers()
     }
 }
 
-void ASTUGameModeBase::ResetOnePlayer(AController* Controller) 
+void ASTUGameModeBase::ResetOnePlayer(AController* Controller)
 {
     if (Controller && Controller->GetPawn())
     {
@@ -103,7 +110,7 @@ void ASTUGameModeBase::ResetOnePlayer(AController* Controller)
     SetPlayerColor(Controller);
 }
 
-void ASTUGameModeBase::CreateTeamsInfo() 
+void ASTUGameModeBase::CreateTeamsInfo()
 {
     if (!GetWorld()) return;
 
@@ -133,8 +140,8 @@ FLinearColor ASTUGameModeBase::DetermineColorByTeamID(int32 TeamID) const
         return GameData.TeamColors[TeamID - 1];
     }
 
-    UE_LOG(
-        LogGameModeBase, Warning, TEXT("No color for team ID %i, set to default color: %s"), TeamID, *GameData.DefaultTeamColor.ToString());
+    UE_LOG(LogSTUGameModeBase, Warning, TEXT("No color for team ID %i, set to default color: %s"), TeamID,
+        *GameData.DefaultTeamColor.ToString());
     return GameData.DefaultTeamColor;
 }
 
@@ -151,7 +158,7 @@ void ASTUGameModeBase::SetPlayerColor(AController* Controller)
     Character->SetPlayerColor(PlayerState->GetTeamColor());
 }
 
-void ASTUGameModeBase::Killed(AController* KillerController, AController* VictimController) 
+void ASTUGameModeBase::Killed(AController* KillerController, AController* VictimController)
 {
     const auto KillerPlayerState = KillerController ? Cast<ASTUPlayerState>(KillerController->PlayerState) : nullptr;
     const auto VictimPlayerState = VictimController ? Cast<ASTUPlayerState>(VictimController->PlayerState) : nullptr;
@@ -214,14 +221,14 @@ void ASTUGameModeBase::SetMatchState(ESTUMatchState State)
     OnMatchStateChanged.Broadcast(MatchState);
 }
 
-void ASTUGameModeBase::GameOver() 
+void ASTUGameModeBase::GameOver()
 {
-    UE_LOG(LogGameModeBase, Display, TEXT("-------- GAME OVER --------"));
+    UE_LOG(LogSTUGameModeBase, Display, TEXT("-------- GAME OVER --------"));
     LogPlayerInfo();
 
     for (auto Pawn : TActorRange<APawn>(GetWorld()))
     {
-        if (Pawn) // TODO: fire continue after game over
+        if (Pawn)  // TODO: fire continue after game over
         {
             Pawn->TurnOff();
             Pawn->DisableInput(nullptr);
