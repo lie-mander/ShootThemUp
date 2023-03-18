@@ -9,9 +9,9 @@
 UCLASS()
 class SHOOTTHEMUP_API USTUSpectatorWidget : public UUserWidget
 {
-	GENERATED_BODY()
-	
-		public:
+    GENERATED_BODY()
+
+public:
     UFUNCTION(BlueprintCallable, Category = "UI")
     bool GetRespawnTimer(int32& CountDownTime) const;
 };

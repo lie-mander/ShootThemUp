@@ -15,9 +15,6 @@ class SHOOTTHEMUP_API USTUGameOverWidget : public UUserWidget
 {
     GENERATED_BODY()
 
-public:
-    virtual void NativeOnInitialized() override;
-
 protected:
     UPROPERTY(meta = (BindWidget))
     UVerticalBox* PlayerStatBox;
@@ -27,6 +24,8 @@ protected:
 
     UPROPERTY(meta = (BindWidget))
     UButton* ResetLevelButton;
+
+    virtual void NativeOnInitialized() override;
 
 private:
     void OnMatchStateChanged(ESTUMatchState State);

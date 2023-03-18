@@ -45,6 +45,7 @@ public:
     UFUNCTION(BlueprintCallable, Category = "UI")
     int32 GetKillsNum() const;
 
+protected:
     virtual void NativeOnInitialized() override;
 
 private:

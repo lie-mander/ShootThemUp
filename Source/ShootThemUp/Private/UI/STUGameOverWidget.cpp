@@ -67,6 +67,6 @@ void USTUGameOverWidget::OnResetLevel()
 {
     if (!GetWorld()) return;
 
-    FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
+    const FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld());
     UGameplayStatics::OpenLevel(GetWorld(), FName(CurrentLevelName));
 }
