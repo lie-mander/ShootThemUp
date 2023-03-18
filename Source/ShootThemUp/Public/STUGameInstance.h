@@ -12,5 +12,9 @@ class SHOOTTHEMUP_API USTUGameInstance : public UGameInstance
     GENERATED_BODY()
 
 public:
-    FString TestString = "Hello Unreal";
+    FName GetStartupLevelName() const { return StartupLevelName; }
+
+protected:
+    UPROPERTY(EditDefaultsOnly, Category = "Menu")
+    FName StartupLevelName = NAME_None;
 };

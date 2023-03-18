@@ -9,7 +9,6 @@
 #include "STUUtils.h"
 #include "Components/STURespawnComponent.h"
 #include "EngineUtils.h"
-#include "STUGameInstance.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUGameModeBase, All, All);
 
@@ -32,12 +31,6 @@ void ASTUGameModeBase::StartPlay()
     SetMatchState(ESTUMatchState::InProgress);
 
     CurrentRound = 1;
-
-    auto Instance = GetWorld()->GetGameInstance<USTUGameInstance>();
-    if (Instance)
-    {
-        UE_LOG(LogSTUGameModeBase, Display, TEXT("%s"), *Instance->TestString);
-    }
 }
 
 UClass* ASTUGameModeBase::GetDefaultPawnClassForController_Implementation(AController* InController)
