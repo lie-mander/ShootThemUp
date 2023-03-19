@@ -7,6 +7,7 @@
 #include "STUCoreTypes.h"
 #include "STUPlayerHUDWidget.generated.h"
 
+class UProgressBar;
 class ASTUGameModeBase;
 
 UCLASS()
@@ -23,6 +24,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "UI")
     bool GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const;
+
+    UFUNCTION(BlueprintCallable, Category = "UI")
+    FString FormatBullets(int32 BulletsNum) const;
 
     UFUNCTION(BlueprintCallable, Category = "UI")
     bool IsPlayerAlive() const;
@@ -48,10 +52,23 @@ public:
 protected:
     virtual void NativeOnInitialized() override;
 
+    UPROPERTY(meta = (BindWidget))
+    UProgressBar* HealthBar;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    float PercentColorThreshold = 0.3f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    FLinearColor GoodColor = FLinearColor::White;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    FLinearColor BadColor = FLinearColor::Red;
+
 private:
     void OnHealthChanged(float Health, float HealthDelta);
-
     void OnChangedPawn(APawn* Pawn);
+
+    void UpdateHealthBar();
 
     ASTUGameModeBase* GetGameMode() const;
 };

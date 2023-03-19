@@ -28,7 +28,7 @@ void USTUGameOverWidget::NativeOnInitialized()
     }
 }
 
-void USTUGameOverWidget::OnMatchStateChanged(ESTUMatchState State) 
+void USTUGameOverWidget::OnMatchStateChanged(ESTUMatchState State)
 {
     if (State == ESTUMatchState::GameOver)
     {
@@ -58,12 +58,13 @@ void USTUGameOverWidget::UpdatePlayersStat()
         PlayerStatRowWidget->SetDeaths(STUUtils::TextFromInt(PlayerState->GetDeathsNum()));
         PlayerStatRowWidget->SetTeam(STUUtils::TextFromInt(PlayerState->GetTeamID()));
         PlayerStatRowWidget->SetPlayerIndicatorVisibility(Controller->IsPlayerController());
+        PlayerStatRowWidget->SetTeamColor(PlayerState->GetTeamColor());
 
         PlayerStatBox->AddChild(PlayerStatRowWidget);
     }
 }
 
-void USTUGameOverWidget::OnResetLevel() 
+void USTUGameOverWidget::OnResetLevel()
 {
     if (!GetWorld()) return;
 

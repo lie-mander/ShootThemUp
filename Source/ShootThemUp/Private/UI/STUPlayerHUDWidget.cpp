@@ -6,6 +6,7 @@
 #include "STUUtils.h"
 #include "STUGameModeBase.h"
 #include "Player/STUPlayerState.h"
+#include "Components/ProgressBar.h"
 
 void USTUPlayerHUDWidget::NativeOnInitialized()
 {
@@ -25,6 +26,8 @@ void USTUPlayerHUDWidget::OnChangedPawn(APawn* Pawn)
     {
         HealthComponent->OnHealthChanged.AddUObject(this, &USTUPlayerHUDWidget::OnHealthChanged);
     }
+
+    UpdateHealthBar();
 }
 
 float USTUPlayerHUDWidget::GetHealthPercent() const
@@ -49,6 +52,21 @@ bool USTUPlayerHUDWidget::GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const
     if (!WeaponComponent) return false;
 
     return WeaponComponent->GetWeaponAmmoData(AmmoData);
+}
+
+FString USTUPlayerHUDWidget::FormatBullets(int32 BulletsNum) const
+{
+    const int32 MaxLen = 3;
+    const TCHAR PrefixSymbol = '0';
+
+    auto BulletStr = FString::FromInt(BulletsNum);
+    const auto SymbolsNumToAdd = MaxLen - BulletStr.Len();
+
+    if (SymbolsNumToAdd > 0)
+    {
+        BulletStr = FString::ChrN(SymbolsNumToAdd, PrefixSymbol).Append(BulletStr);
+    }
+    return BulletStr;
 }
 
 bool USTUPlayerHUDWidget::IsPlayerAlive() const
@@ -100,6 +118,15 @@ void USTUPlayerHUDWidget::OnHealthChanged(float Health, float HealthDelta)
     {
         OnTakeDamage();
     }
+
+    UpdateHealthBar();
+}
+
+void USTUPlayerHUDWidget::UpdateHealthBar()
+{
+    if (!HealthBar) return;
+
+    HealthBar->SetFillColorAndOpacity(GetHealthPercent() > PercentColorThreshold ? GoodColor : BadColor);
 }
 
 ASTUGameModeBase* USTUPlayerHUDWidget::GetGameMode() const
