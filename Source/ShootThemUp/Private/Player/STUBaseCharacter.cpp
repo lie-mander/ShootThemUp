@@ -6,6 +6,8 @@
 #include "Components/STUHealthComponent.h"
 #include "Components/STUWeaponComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
+#include "UI/STUHealthBarWidget.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseCharacter, All, All);
 
@@ -16,6 +18,12 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
 
     HealthComponent = CreateDefaultSubobject<USTUHealthComponent>("HealthComponent");
     WeaponComponent = CreateDefaultSubobject<USTUWeaponComponent>("WeaponComponent");
+
+    HealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("HealthBarComponent");
+    HealthWidgetComponent->SetupAttachment(GetRootComponent());
+    HealthWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+    HealthWidgetComponent->SetDrawAtDesiredSize(true);
+    HealthWidgetComponent->bOwnerNoSee = true;
 }
 
 void ASTUBaseCharacter::BeginPlay()
@@ -23,6 +31,7 @@ void ASTUBaseCharacter::BeginPlay()
     Super::BeginPlay();
 
     check(HealthComponent);
+    check(HealthWidgetComponent);
     check(GetCharacterMovement());
 
     OnHealthChanged(HealthComponent->GetHealth(), HealthComponent->GetHealth());
@@ -77,7 +86,10 @@ void ASTUBaseCharacter::OnDeath()
 
 void ASTUBaseCharacter::OnHealthChanged(float Health, float HealthDelta)
 {
+    const auto HealthBarWidget = Cast<USTUHealthBarWidget>(HealthWidgetComponent->GetUserWidgetObject());
+    if (!HealthBarWidget) return;
 
+    HealthBarWidget->SetHealthPercant(HealthComponent->GetHealthPercent());
 }
 
 void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit) 

@@ -8,6 +8,7 @@
 
 class USTUHealthComponent;
 class USTUWeaponComponent;
+class UWidgetComponent;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTUBaseCharacter : public ACharacter
@@ -23,6 +24,9 @@ protected:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     USTUWeaponComponent* WeaponComponent;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    UWidgetComponent* HealthWidgetComponent;
 
     UPROPERTY(EditDefaultsOnly, Category = "Animation")
     UAnimMontage* DeathAnimMontage;
@@ -41,6 +45,7 @@ protected:
 
     virtual void BeginPlay() override;
     virtual void OnDeath();
+    virtual void OnHealthChanged(float Health, float HealthDelta);
 
 public:
     UFUNCTION(BlueprintCallable, Category = "Movement")
@@ -54,8 +59,6 @@ public:
     virtual void Tick(float DeltaTime) override;
 
 private:
-    void OnHealthChanged(float Health, float HealthDelta);
-
     UFUNCTION()
     void OnGroundLanded(const FHitResult& Hit);
 };
