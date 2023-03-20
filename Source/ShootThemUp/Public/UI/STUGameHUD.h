@@ -7,9 +7,8 @@
 #include "STUCoreTypes.h"
 #include "STUGameHUD.generated.h"
 
-/**
- *
- */
+class USTUBaseWidget;
+
 UCLASS()
 class SHOOTTHEMUP_API ASTUGameHUD : public AHUD
 {
@@ -32,9 +31,9 @@ protected:
 
 private:
     UPROPERTY()
-    TMap<ESTUMatchState, UUserWidget*> GameWidgets;
+    TMap<ESTUMatchState, USTUBaseWidget*> GameWidgets;
 
-    UUserWidget* CurrentWidget = nullptr;
+    USTUBaseWidget* CurrentWidget = nullptr;
 
     void DrawCrossHair();
 
