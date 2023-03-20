@@ -8,6 +8,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
 #include "UI/STUHealthBarWidget.h"
+#include "Sound/SoundCue.h"
+#include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseCharacter, All, All);
 
@@ -38,7 +40,7 @@ void ASTUBaseCharacter::BeginPlay()
 
     HealthComponent->OnDeath.AddUObject(this, &ASTUBaseCharacter::OnDeath);
     HealthComponent->OnHealthChanged.AddUObject(this, &ASTUBaseCharacter::OnHealthChanged);
-    
+
     LandedDelegate.AddDynamic(this, &ASTUBaseCharacter::OnGroundLanded);
 }
 
@@ -82,6 +84,8 @@ void ASTUBaseCharacter::OnDeath()
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
     WeaponComponent->StopFire();
+
+    UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
 }
 
 void ASTUBaseCharacter::OnHealthChanged(float Health, float HealthDelta)
@@ -92,7 +96,7 @@ void ASTUBaseCharacter::OnHealthChanged(float Health, float HealthDelta)
     HealthBarWidget->SetHealthPercant(HealthComponent->GetHealthPercent());
 }
 
-void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit) 
+void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit)
 {
     const auto FallVelocity = -GetVelocity().Z;
     if (FallVelocity < LandedDamageVelocity.X) return;

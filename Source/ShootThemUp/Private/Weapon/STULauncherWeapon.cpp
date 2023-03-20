@@ -1,8 +1,9 @@
 // Shoot Them Up Game. All Rights Reserved
 
 #include "Weapon/STULauncherWeapon.h"
-#include "Kismet/GameplayStatics.h"
 #include "Weapon/STUProjectile.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 void ASTULauncherWeapon::StartFire()
 {
@@ -11,7 +12,9 @@ void ASTULauncherWeapon::StartFire()
 
 void ASTULauncherWeapon::MakeShot()
 {
-    if (!GetWorld() || IsAmmoEmpty()) return;
+    Super::MakeShot();
+
+    if (IsAmmoEmpty()) return;
 
     FVector TraceStart;
     FVector TraceEnd;
@@ -36,6 +39,8 @@ void ASTULauncherWeapon::MakeShot()
 
     SpawnMuzzleFX();
     DecreaseAmmo();
+
+    UGameplayStatics::SpawnSoundAttached(FireSound, WeaponMesh, MuzzleSocketName);
 }
 
 void ASTULauncherWeapon::SpawnProjectileInDirection(const FVector& EndPoint)
