@@ -32,6 +32,11 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Menu")
     TSubclassOf<UUserWidget> LevelItemWidgetClass;
 
+    UPROPERTY(meta = (BindWidgetAnim), Transient)
+    UWidgetAnimation* HideAnimation;
+
+    virtual void OnAnimationFinished_Implementation(const UWidgetAnimation* Animation);
+
 private:
     TArray<USTULevelItemWidget*> LevelItemWidgets;
 
