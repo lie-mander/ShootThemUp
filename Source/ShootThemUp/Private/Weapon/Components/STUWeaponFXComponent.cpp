@@ -2,6 +2,7 @@
 
 #include "Weapon/Components/STUWeaponFXComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/DecalComponent.h"
 
@@ -35,6 +36,10 @@ void USTUWeaponFXComponent::PlayImpactFX(const FHitResult& Hit)
         ImpactData.DecalData.Size,                     //
         Hit.ImpactPoint,                                //
         Hit.ImpactNormal.Rotation());
+
+    // sound
+    UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactData.SoundImpact, Hit.ImpactPoint);
+
 
     if (DecalComponent)
     {

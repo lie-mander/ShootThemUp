@@ -23,6 +23,7 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
     FImpactData DefaultImpactData;
 
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
     TMap<UPhysicalMaterial*, FImpactData> ImpactDataMap;
 };
