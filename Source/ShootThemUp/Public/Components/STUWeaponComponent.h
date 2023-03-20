@@ -21,6 +21,7 @@ public:
     void StopFire();
     virtual void NextWeapon();
     void Reload();
+    void Zoom(bool IsEnabled);
 
     bool CanEquip();
 

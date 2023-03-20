@@ -73,6 +73,7 @@ void USTUWeaponComponent::EquipWeapon()
     if (CurrentWeapon)
     {
         CurrentWeapon->StopFire();
+        CurrentWeapon->Zoom(false);
     }
     EquipAnimInProgress = true;
     PlayAnimMontage(EquipAnimMontage);
@@ -197,6 +198,14 @@ bool USTUWeaponComponent::CanReload()
 void USTUWeaponComponent::Reload()
 {
     ChangeClip();
+}
+
+void USTUWeaponComponent::Zoom(bool IsEnabled)
+{
+    if (CurrentWeapon)
+    {
+        CurrentWeapon->Zoom(IsEnabled);
+    }
 }
 
 void USTUWeaponComponent::OnClipEmpty(ASTUBaseWeapon* AmmoEmptyWeapon)

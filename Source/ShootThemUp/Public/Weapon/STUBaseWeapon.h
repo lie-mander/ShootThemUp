@@ -23,6 +23,7 @@ public:
 
     virtual void StartFire();
     virtual void StopFire();
+    virtual void Zoom(bool IsEnabled) {}
 
     void ChangeClip();
     bool CanChangeClip();
@@ -84,10 +85,9 @@ protected:
     FVector GetMuzzleWorldForwardVector() const;
     float GetDegreesBetweenOwnerAndTarget() const;
     void SetDegreesBetweenOwnerAndTarget(FHitResult& HitResult);
+    AController* GetController() const;
 
 private:
     float DegreesBetweenOwnerAndTarget = 0.0f;
     FAmmoData CurrentAmmo;
-
-    AController* GetController() const;
 };

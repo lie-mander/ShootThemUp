@@ -25,6 +25,9 @@ public:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Shoot")
     float BulletSpread = 1.5f;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Shoot")
+    float FOVZoomAngle = 50.0f;
+
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "VFX")
     USTUWeaponFXComponent* WeaponFXComponent;
 
@@ -36,6 +39,7 @@ public:
 
     virtual void StartFire() override;
     virtual void StopFire() override;
+    virtual void Zoom(bool IsEnabled) override;
 
 protected:
     virtual void BeginPlay() override;
@@ -55,4 +59,6 @@ private:
     void SetFXActive(bool IsActive);
     void SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd);
     void DoShotOperators(FVector& TraceEndFX, FHitResult& HitResult);
+
+    float DefaultFOVAngle = 90.0f;
 };
