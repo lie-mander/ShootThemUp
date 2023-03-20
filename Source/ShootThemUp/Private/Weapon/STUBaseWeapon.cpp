@@ -176,7 +176,7 @@ void ASTUBaseWeapon::ChangeClip()
 
 bool ASTUBaseWeapon::CanChangeClip()
 {
-    return CurrentAmmo.Bullets < DefaultAmmo.Bullets && !IsAmmoEmpty();
+    return CurrentAmmo.Bullets < DefaultAmmo.Bullets && !IsAmmoEmpty() && CurrentAmmo.Clips != 0;
 }
 
 void ASTUBaseWeapon::SetDegreesBetweenOwnerAndTarget(FHitResult& HitResult)
