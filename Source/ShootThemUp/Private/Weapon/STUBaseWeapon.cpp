@@ -102,7 +102,10 @@ void ASTUBaseWeapon::MakeDamage(FHitResult& HitResult)
 {
     auto Target = Cast<ACharacter>(HitResult.GetActor());
     if (!Target) return;
-    Target->TakeDamage(WeaponDamage, FDamageEvent(), GetController(), this);
+
+    FPointDamageEvent PointDamageEvent;
+    PointDamageEvent.HitInfo = HitResult;
+    Target->TakeDamage(WeaponDamage, PointDamageEvent, GetController(), this);
 }
 
 void ASTUBaseWeapon::DecreaseAmmo()
