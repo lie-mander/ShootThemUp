@@ -3,12 +3,14 @@
 #include "STUGameModeBase.h"
 #include "Player/STUPlayerController.h"
 #include "Player/STUBaseCharacter.h"
+#include "Player/STUPlayerState.h"
 #include "UI/STUGameHUD.h"
 #include "AIController.h"
-#include "Player/STUPlayerState.h"
 #include "STUUtils.h"
 #include "Components/STURespawnComponent.h"
+#include "Components/STUAIWeaponComponent.h"
 #include "EngineUtils.h"
+#include "GameFramework/Pawn.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSTUGameModeBase, All, All);
 
@@ -89,6 +91,18 @@ void ASTUGameModeBase::ResetPlayers()
     for (auto It = GetWorld()->GetControllerIterator(); It; It++)
     {
         ResetOnePlayer(It->Get());
+    }
+}
+
+void ASTUGameModeBase::StopAllFire()
+{
+    for (auto Pawn : TActorRange<APawn>(GetWorld()))
+    {
+        const auto WeaponComponent = STUUtils::GetSTUPlayerComponent<USTUWeaponComponent>(Pawn);
+        if (!WeaponComponent) continue;
+
+        WeaponComponent->StopFire();
+        WeaponComponent->Zoom(false);
     }
 }
 
@@ -237,6 +251,7 @@ bool ASTUGameModeBase::SetPause(APlayerController* PC, FCanUnpause CanUnpauseDel
 
     if (IsPauseSet)
     {
+        StopAllFire();
         SetMatchState(ESTUMatchState::Pause);
     }
 

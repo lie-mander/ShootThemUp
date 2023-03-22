@@ -49,6 +49,22 @@ void ASTUBaseCharacter::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 }
 
+void ASTUBaseCharacter::TurnOff() 
+{
+    Super::TurnOff();
+
+    WeaponComponent->StopFire();
+    WeaponComponent->Zoom(false);
+}
+
+void ASTUBaseCharacter::Reset() 
+{
+    Super::Reset();
+
+    WeaponComponent->StopFire();
+    WeaponComponent->Zoom(false);
+}
+
 bool ASTUBaseCharacter::IsRunning() const
 {
     return false;

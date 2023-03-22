@@ -61,6 +61,8 @@ public:
     void SetPlayerColor(const FLinearColor& Color);
 
     virtual void Tick(float DeltaTime) override;
+    virtual void TurnOff() override;
+    virtual void Reset() override;
 
 private:
     UFUNCTION()

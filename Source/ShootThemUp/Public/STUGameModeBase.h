@@ -46,9 +46,12 @@ private:
     void SpawnBots();
     void StartRound();
     void GameTimerUpdate();
+
     void ResetPlayers();
+    void StopAllFire();
     void ResetOnePlayer(AController* Controller);
     void StartRespawn(AController* Controller);
+
     void GameOver();
 
     void CreateTeamsInfo();
