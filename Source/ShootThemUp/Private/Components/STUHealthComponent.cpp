@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "STUGameModeBase.h"
+#include "Perception/AISense_Damage.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogHealthComponent, All, All)
 
@@ -73,6 +74,7 @@ void USTUHealthComponent::ApplyDamage(float Damage, AController* InstigatedBy)
     }
 
     PlayCameraShake();
+    ReportDamageEvent(Damage, InstigatedBy);
 }
 
 float USTUHealthComponent::GetModifierByBoneName(AActor* DamagedActor, FName BoneName)
@@ -136,4 +138,23 @@ void USTUHealthComponent::Killed(AController* KillerController)
     {
         GameMode->Killed(KillerController, VictimController);
     }
+}
+
+void USTUHealthComponent::ReportDamageEvent(float Damage, AController* InstigatedBy)
+{
+    if (!GetWorld() ||            //
+        !GetOwner() ||            //
+        !InstigatedBy ||          //
+        !InstigatedBy->GetPawn()  //
+    )
+        return;
+
+    UAISense_Damage::ReportDamageEvent(               //
+        GetWorld(),                                   //
+        GetOwner(),                                   //
+        InstigatedBy->GetPawn(),                      //
+        Damage,                                       //
+        InstigatedBy->GetPawn()->GetActorLocation(),  //
+        GetOwner()->GetActorLocation()                //
+    );
 }

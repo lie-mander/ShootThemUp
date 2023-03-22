@@ -76,6 +76,7 @@ private:
         class AController* InstigatedBy, AActor* DamageCauser);
 
     void ApplyDamage(float Damage, AController* InstigatedBy);
+    void ReportDamageEvent(float Damage, AController* InstigatedBy);
     float GetModifierByBoneName(AActor* DamagedActor, FName BoneName);
 
     bool IsFullHealth() const;
