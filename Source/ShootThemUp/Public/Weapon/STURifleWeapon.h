@@ -26,6 +26,9 @@ public:
     float BulletSpread = 1.5f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Shoot")
+    float OnHardMoveBulletSpread = 3.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Shoot")
     float FOVZoomAngle = 50.0f;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "VFX")
@@ -40,6 +43,8 @@ public:
     virtual void StartFire() override;
     virtual void StopFire() override;
     virtual void Zoom(bool IsEnabled) override;
+
+    virtual void SetOnHardMoveBulletSpread(bool IsHardMoving) override;
 
 protected:
     virtual void BeginPlay() override;
@@ -61,4 +66,6 @@ private:
     void DoShotOperators(FVector& TraceEndFX, FHitResult& HitResult);
 
     float DefaultFOVAngle = 90.0f;
+
+    float CurrentBulletSpread;
 };

@@ -20,6 +20,7 @@ public:
 
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
     virtual bool IsRunning() const override;
+    virtual void Jump() override;
 
 protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
@@ -37,6 +38,8 @@ protected:
 private:
     bool WantsToRun = false;
     bool IsMovingForward = false;
+    bool IsMovingBackward = false;
+    bool IsMovingRight = false;
 
     void MoveForward(float Amount);
     void MoveRight(float Amount);

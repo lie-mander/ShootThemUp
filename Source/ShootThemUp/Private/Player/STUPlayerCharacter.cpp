@@ -3,9 +3,12 @@
 #include "Player/STUPlayerCharacter.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/STUWeaponComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 
 ASTUPlayerCharacter::ASTUPlayerCharacter(const FObjectInitializer& ObjInit) : Super(ObjInit)
 {
@@ -73,7 +76,7 @@ void ASTUPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
     PlayerInputComponent->BindAxis("MoveRight", this, &ASTUPlayerCharacter::MoveRight);
     PlayerInputComponent->BindAxis("LookUp", this, &ASTUBaseCharacter::AddControllerPitchInput);
     PlayerInputComponent->BindAxis("TurnAround", this, &ASTUBaseCharacter::AddControllerYawInput);
-    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASTUBaseCharacter::Jump);
+    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASTUPlayerCharacter::Jump);
     PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ASTUPlayerCharacter::OnStartRunning);
     PlayerInputComponent->BindAction("Run", IE_Released, this, &ASTUPlayerCharacter::OnStopRunning);
     PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &USTUWeaponComponent::StartFire);
@@ -97,24 +100,41 @@ void ASTUPlayerCharacter::OnDeath()
 
 void ASTUPlayerCharacter::MoveForward(float Amount)
 {
+    if (IsPlayerFalling()) return;
+
     IsMovingForward = Amount > 0.0f;
+    IsMovingBackward = Amount < 0.0f;
     if (Amount == 0.0f) return;
     AddMovementInput(GetActorForwardVector(), Amount);
 }
 
 void ASTUPlayerCharacter::MoveRight(float Amount)
 {
+    if (IsRunning() || IsPlayerFalling()) return;
+
+    IsMovingRight = Amount > 0.0f;
     if (Amount == 0.0f) return;
     AddMovementInput(GetActorRightVector(), Amount);
 }
 
+void ASTUPlayerCharacter::Jump()
+{
+    if (IsRunning()) return;
+
+    Super::Jump();
+}
+
 void ASTUPlayerCharacter::OnStartRunning()
 {
+    if (IsMovingRight || IsMovingBackward) return;
+
+    WeaponComponent->SetOnHardMoveBulletSpread(true);
     WantsToRun = true;
 }
 
 void ASTUPlayerCharacter::OnStopRunning()
 {
+    WeaponComponent->SetOnHardMoveBulletSpread(false);
     WantsToRun = false;
 }
 

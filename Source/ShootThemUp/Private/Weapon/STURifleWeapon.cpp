@@ -18,6 +18,8 @@ void ASTURifleWeapon::BeginPlay()
     Super::BeginPlay();
 
     check(WeaponFXComponent);
+
+    CurrentBulletSpread = BulletSpread;
 }
 
 void ASTURifleWeapon::StartFire()
@@ -45,6 +47,11 @@ void ASTURifleWeapon::Zoom(bool IsEnabled)
 
     const TInterval<float> FOV(FOVZoomAngle, DefaultFOVAngle);
     Controller->PlayerCameraManager->SetFOV(IsEnabled ? FOV.Min : FOV.Max);
+}
+
+void ASTURifleWeapon::SetOnHardMoveBulletSpread(bool IsHardMoving)
+{
+    CurrentBulletSpread = IsHardMoving ? OnHardMoveBulletSpread : BulletSpread;
 }
 
 void ASTURifleWeapon::MakeShot()
@@ -123,7 +130,7 @@ bool ASTURifleWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
     if (!GetPlayerViewPoint(ViewLocation, ViewRotation)) return false;
 
     TraceStart = ViewLocation;
-    const auto HalfRad = FMath::DegreesToRadians(BulletSpread);
+    const auto HalfRad = FMath::DegreesToRadians(CurrentBulletSpread);
     const FVector ShootDirection = FMath::VRandCone(ViewRotation.Vector(), HalfRad);
     TraceEnd = TraceStart + ShootDirection * TraceMaxDistance;
     return true;

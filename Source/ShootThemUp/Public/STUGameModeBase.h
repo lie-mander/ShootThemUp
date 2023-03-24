@@ -25,6 +25,7 @@ public:
     float GetRoundCountDown() const { return RoundCountDown; }
     float GetCurrentRoundNum() const { return CurrentRound; }
     FGameData GetGameData() const { return GameData; }
+    ESTUMatchState GetCurrentMatchState() const { return MatchState; }
 
     void Killed(AController* KillerController, AController* VictimController);
     void RespawnRequest(AController* ControllerToRespawn);

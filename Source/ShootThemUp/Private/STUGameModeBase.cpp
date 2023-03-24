@@ -170,6 +170,8 @@ void ASTUGameModeBase::Killed(AController* KillerController, AController* Victim
     const auto KillerPlayerState = KillerController ? Cast<ASTUPlayerState>(KillerController->PlayerState) : nullptr;
     const auto VictimPlayerState = VictimController ? Cast<ASTUPlayerState>(VictimController->PlayerState) : nullptr;
 
+    if (!KillerPlayerState || !VictimPlayerState) return;
+
     const auto IsOneTeam = KillerPlayerState->GetTeamID() == VictimPlayerState->GetTeamID();
     if (KillerPlayerState && IsOneTeam)
     {

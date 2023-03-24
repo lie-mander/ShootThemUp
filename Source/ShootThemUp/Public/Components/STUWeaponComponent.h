@@ -18,10 +18,12 @@ public:
     USTUWeaponComponent();
 
     virtual void StartFire();
-    void StopFire();
+    virtual void StopFire();
     virtual void NextWeapon();
     void Reload();
     void Zoom(bool IsEnabled);
+
+    void SetOnHardMoveBulletSpread(bool IsHardMoving);
 
     bool CanEquip();
 

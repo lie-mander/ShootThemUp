@@ -20,12 +20,5 @@ public:
     UBehaviorTree* BehaviorTreeAsset;
 
 protected:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
-    float HealthVisibilityDistance = 1000.0f;
-
     virtual void OnDeath() override;
-    virtual void Tick(float DeltaTime) override;
-
-    private:
-    void UpdateHealthWidgetVisibility();
 };

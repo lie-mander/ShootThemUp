@@ -10,6 +10,8 @@
 #include "UI/STUHealthBarWidget.h"
 #include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
+#include "Animation/AnimUtils.h"
+#include "Animation/STUJumpEndedAnimNotify.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogBaseCharacter, All, All);
 
@@ -20,12 +22,6 @@ ASTUBaseCharacter::ASTUBaseCharacter(const FObjectInitializer& ObjInit)
 
     HealthComponent = CreateDefaultSubobject<USTUHealthComponent>("HealthComponent");
     WeaponComponent = CreateDefaultSubobject<USTUWeaponComponent>("WeaponComponent");
-
-    HealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("HealthBarComponent");
-    HealthWidgetComponent->SetupAttachment(GetRootComponent());
-    HealthWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
-    HealthWidgetComponent->SetDrawAtDesiredSize(true);
-    HealthWidgetComponent->bOwnerNoSee = true;
 }
 
 void ASTUBaseCharacter::BeginPlay()
@@ -33,7 +29,6 @@ void ASTUBaseCharacter::BeginPlay()
     Super::BeginPlay();
 
     check(HealthComponent);
-    check(HealthWidgetComponent);
     check(GetCharacterMovement());
 
     OnHealthChanged(HealthComponent->GetHealth(), HealthComponent->GetHealth());
@@ -42,6 +37,12 @@ void ASTUBaseCharacter::BeginPlay()
     HealthComponent->OnHealthChanged.AddUObject(this, &ASTUBaseCharacter::OnHealthChanged);
 
     LandedDelegate.AddDynamic(this, &ASTUBaseCharacter::OnGroundLanded);
+
+    auto JumpEndedNotify = AnimUtils::FindNotifyByClass<USTUJumpEndedAnimNotify>(JumpEndAnimMontage);
+    if (JumpEndedNotify)
+    {
+        JumpEndedNotify->OnNotified.AddUObject(this, &ASTUBaseCharacter::OnJumpEnded);
+    }
 }
 
 void ASTUBaseCharacter::Tick(float DeltaTime)
@@ -49,7 +50,7 @@ void ASTUBaseCharacter::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 }
 
-void ASTUBaseCharacter::TurnOff() 
+void ASTUBaseCharacter::TurnOff()
 {
     Super::TurnOff();
 
@@ -57,7 +58,7 @@ void ASTUBaseCharacter::TurnOff()
     WeaponComponent->Zoom(false);
 }
 
-void ASTUBaseCharacter::Reset() 
+void ASTUBaseCharacter::Reset()
 {
     Super::Reset();
 
@@ -105,16 +106,12 @@ void ASTUBaseCharacter::OnDeath()
     UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
 }
 
-void ASTUBaseCharacter::OnHealthChanged(float Health, float HealthDelta)
-{
-    const auto HealthBarWidget = Cast<USTUHealthBarWidget>(HealthWidgetComponent->GetUserWidgetObject());
-    if (!HealthBarWidget) return;
-
-    HealthBarWidget->SetHealthPercant(HealthComponent->GetHealthPercent());
-}
+void ASTUBaseCharacter::OnHealthChanged(float Health, float HealthDelta) {}
 
 void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit)
 {
+    PlayAnimMontage(JumpEndAnimMontage);
+
     const auto FallVelocity = -GetVelocity().Z;
     if (FallVelocity < LandedDamageVelocity.X) return;
 
@@ -122,3 +119,20 @@ void ASTUBaseCharacter::OnGroundLanded(const FHitResult& Hit)
 
     TakeDamage(FallDamage, FDamageEvent(), nullptr, nullptr);
 }
+
+void ASTUBaseCharacter::Jump()
+{
+    IsPlayerOnTheJump = true;
+
+    Super::Jump();
+}
+
+void ASTUBaseCharacter::OnJumpEnded(USkeletalMeshComponent* MeshComp) 
+{
+    IsPlayerOnTheJump = false;
+}
+
+bool ASTUBaseCharacter::IsPlayerFalling() const
+{
+    return IsPlayerOnTheJump;
+};

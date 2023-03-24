@@ -26,11 +26,11 @@ protected:
     UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
     USTUWeaponComponent* WeaponComponent;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
-    UWidgetComponent* HealthWidgetComponent;
-
     UPROPERTY(EditDefaultsOnly, Category = "Animation")
     UAnimMontage* DeathAnimMontage;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Animation")
+    UAnimMontage* JumpEndAnimMontage;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
     USoundCue* DeathSound;
@@ -51,9 +51,13 @@ protected:
     virtual void OnDeath();
     virtual void OnHealthChanged(float Health, float HealthDelta);
 
+    bool IsPlayerFalling() const;
+
 public:
     UFUNCTION(BlueprintCallable, Category = "Movement")
     virtual bool IsRunning() const;
+
+    virtual void Jump() override;
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
     float GetMovementDirection() const;
@@ -64,7 +68,11 @@ public:
     virtual void TurnOff() override;
     virtual void Reset() override;
 
+    bool IsPlayerOnTheJump = false;
+
 private:
     UFUNCTION()
     void OnGroundLanded(const FHitResult& Hit);
+
+    void OnJumpEnded(USkeletalMeshComponent* MeshComp);
 };

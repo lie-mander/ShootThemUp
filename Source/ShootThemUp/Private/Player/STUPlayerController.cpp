@@ -35,7 +35,18 @@ void ASTUPlayerController::OnPauseGame()
 {
     if (!GetWorld() || !GetWorld()->GetAuthGameMode()) return;
 
-    GetWorld()->GetAuthGameMode()->SetPause(this);
+    const auto GameMode = Cast<ASTUGameModeBase>(GetWorld()->GetAuthGameMode());
+
+    if (GameMode)
+    {
+        const auto CurrentMatchState = GameMode->GetCurrentMatchState();
+        switch (CurrentMatchState)
+        {
+            case ESTUMatchState::InProgress: GameMode->SetPause(this); break;
+            case ESTUMatchState::Pause: GameMode->ClearPause(); break;
+            default: break;
+        }
+    }
 }
 
 void ASTUPlayerController::OnMatchStateChanged(ESTUMatchState State)

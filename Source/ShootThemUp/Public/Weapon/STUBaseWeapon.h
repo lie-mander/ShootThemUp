@@ -25,6 +25,8 @@ public:
     virtual void StopFire();
     virtual void Zoom(bool IsEnabled) {}
 
+    virtual void SetOnHardMoveBulletSpread(bool IsHardMoving) {}
+
     void ChangeClip();
     bool CanChangeClip();
     bool IsAmmoEmpty() const;

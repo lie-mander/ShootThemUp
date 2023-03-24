@@ -208,6 +208,14 @@ void USTUWeaponComponent::Zoom(bool IsEnabled)
     }
 }
 
+void USTUWeaponComponent::SetOnHardMoveBulletSpread(bool IsHardMoving) 
+{
+    for (const auto Weapon : Weapons)
+    {
+        Weapon->SetOnHardMoveBulletSpread(IsHardMoving);
+    }
+}
+
 void USTUWeaponComponent::OnClipEmpty(ASTUBaseWeapon* AmmoEmptyWeapon)
 {
     if (!AmmoEmptyWeapon) return;
