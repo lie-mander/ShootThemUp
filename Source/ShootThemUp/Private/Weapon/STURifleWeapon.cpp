@@ -25,6 +25,8 @@ void ASTURifleWeapon::BeginPlay()
 void ASTURifleWeapon::StartFire()
 {
     InitFX();
+
+    IsFirstHit = true;
     GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &ASTURifleWeapon::MakeShot, TimeBetweenShots, true);
     MakeShot();
 }
@@ -52,6 +54,7 @@ void ASTURifleWeapon::Zoom(bool IsEnabled)
 void ASTURifleWeapon::SetOnHardMoveBulletSpread(bool IsHardMoving)
 {
     CurrentBulletSpread = IsHardMoving ? OnHardMoveBulletSpread : BulletSpread;
+    IsOwnerHardMoving = IsHardMoving;
 }
 
 void ASTURifleWeapon::MakeShot()
@@ -66,10 +69,16 @@ void ASTURifleWeapon::MakeShot()
 
     FVector TraceStart;
     FVector TraceEnd;
+
     if (!GetTraceData(TraceStart, TraceEnd))
     {
         StopFire();
         return;
+    }
+
+    if (IsFirstHit)
+    {
+        IsFirstHit = false;
     }
 
     FHitResult HitResultFromView;
@@ -129,9 +138,18 @@ bool ASTURifleWeapon::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
     FRotator ViewRotation;
     if (!GetPlayerViewPoint(ViewLocation, ViewRotation)) return false;
 
-    TraceStart = ViewLocation;
-    const auto HalfRad = FMath::DegreesToRadians(CurrentBulletSpread);
+    auto HalfRad = 0.0f;
+    if (IsFirstHit && !IsOwnerHardMoving)
+    {
+        HalfRad = FMath::DegreesToRadians(0.0f);
+    }
+    else
+    {
+        HalfRad = FMath::DegreesToRadians(CurrentBulletSpread);
+    }
+
     const FVector ShootDirection = FMath::VRandCone(ViewRotation.Vector(), HalfRad);
+    TraceStart = ViewLocation;
     TraceEnd = TraceStart + ShootDirection * TraceMaxDistance;
     return true;
 }

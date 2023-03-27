@@ -68,4 +68,7 @@ private:
     float DefaultFOVAngle = 90.0f;
 
     float CurrentBulletSpread;
+
+    bool IsFirstHit = true;
+    bool IsOwnerHardMoving = false;
 };
